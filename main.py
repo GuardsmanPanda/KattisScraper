@@ -46,9 +46,14 @@ def update_solution_cache(headers):
             difficulty = float(cols[8].text) if '-' not in cols[8].text else float(cols[8].text.split(' - ')[1])
             solved = 1 if 'solved' in row.get('class') else 0
             cur.execute("""
-                INSERT OR REPLACE INTO problem_cache (
+                INSERT INTO problem_cache (
                     id, name, difficulty, is_solved, is_deleted
                 ) VALUES (?, ?, ?, ?, 0)
+                ON CONFLICT(id) DO UPDATE SET
+                    name = excluded.name,
+                    difficulty = excluded.difficulty,
+                    is_solved = excluded.is_solved,
+                    is_deleted = 0
             """, (problem_id, name, difficulty, solved))
             found += 1
         page += 1
@@ -155,7 +160,7 @@ def main():
         "Cookie": "",
         "User-Agent": "Guardsmanpanda Problem Scraper"
     }
-    create_solution_cache()
+    #create_solution_cache()
     update_solution_cache(headers)
     update_problem_created_at(headers)
     update_problem_length(headers)
