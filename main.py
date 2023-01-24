@@ -220,9 +220,10 @@ def print_simple_stats():
 
 def main():
     headers = {
-        "Cookie": "",
         "User-Agent": "Guardsmanpanda Problem Scraper"
     }
+    with open('cookie.txt', 'r') as file:
+        headers["cookie"] = file.readline()
     #create_solution_cache()
     update_solution_cache(headers)
     #update_problem_created_at(headers)
