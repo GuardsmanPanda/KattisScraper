@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from datetime import date
 import requests
 import sqlite3
 import os
@@ -7,7 +8,7 @@ import os
 def get_kattis_user_name(headers):
     data = requests.get("https://open.kattis.com/", headers=headers).text
     soup = BeautifulSoup(data, 'html.parser')
-    return soup.find('div', {'class': 'user-infobox-name'}).find('a').get('href')[7:]
+    return soup.find('a', {'class': 'static_link'}).get('href')[7:]
 
 
 def get_all_from_query(query: str):
@@ -21,15 +22,18 @@ def create_solution_cache():
     con = sqlite3.connect('problem_cache.db')
     cur = con.cursor()
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS problem_cache (
+        CREATE TABLE IF NOT EXISTS problem_cache(
             id TEXT PRIMARY KEY NOT NULL,
             name TEXT NOT NULL,
-            difficulty FLOAT,
+            difficulty_low FLOAT,
+            difficulty_high FLOAT,
             description_length INTEGER,
-            is_solved INTEGER NOT NULL,
+            shortest_solution_length INTEGER,
+            average_solution_length INTEGER,
+            solution_status TEXT,
             solved_at TEXT,
             created_at TEXT,
-            is_deleted INTEGER NOT NULL DEFAULT 0
+            last_seen_at TEXT
         )
     """)
     con.commit()
@@ -40,29 +44,33 @@ def update_solution_cache(headers):
     con = sqlite3.connect('problem_cache.db')
     cur = con.cursor()
     url, page = "https://open.kattis.com/problems?page=",  0
-    cur.execute("UPDATE problem_cache SET is_deleted = 1")
     while True:
         print("Scraping page {}".format(page))
         data = requests.get(url+str(page), headers=headers).text
         soup = BeautifulSoup(data, 'html.parser')
-        table = soup.find('table', {'class': 'problem_list'}).find('tbody').find_all('tr')
+        table = soup.find('table', {'class': 'table2'}).find('tbody').find_all('tr')
         found = 0
         for row in table:
             cols = row.find_all('td')
             problem_id = cols[0].find('a').get('href')[10:]
             name = cols[0].find('a').text
-            difficulty = float(cols[8].text) if '-' not in cols[8].text else float(cols[8].text.split(' - ')[1])
-            solved = 1 if 'solved' in row.get('class') else 0
+            solution_status = cols[1].find('div').text
+            shortest_solution_length = cols[3].text
+            diff_text = cols[7].find('span').text
+            difficulty_low = float(diff_text) if '-' not in diff_text else float(diff_text.split(' - ')[0])
+            difficulty_high = float(diff_text) if '-' not in diff_text else float(diff_text.split(' - ')[1])
             cur.execute("""
                 INSERT INTO problem_cache (
-                    id, name, difficulty, is_solved, is_deleted
-                ) VALUES (?, ?, ?, ?, 0)
+                    id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, last_seen_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     name = excluded.name,
-                    difficulty = excluded.difficulty,
-                    is_solved = excluded.is_solved,
-                    is_deleted = 0
-            """, (problem_id, name, difficulty, solved))
+                    shortest_solution_length = excluded.shortest_solution_length,
+                    difficulty_low = excluded.difficulty_low,
+                    difficulty_high = excluded.difficulty_high,
+                    solution_status = excluded.solution_status,
+                    last_seen_at = excluded.last_seen_at
+            """, (problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
             found += 1
         page += 1
         if found == 0:
@@ -116,20 +124,24 @@ def update_problem_length(headers):
 def update_problem_solved_at(headers):
     con = sqlite3.connect('problem_cache.db')
     user_name = get_kattis_user_name(headers)
-    for problem in get_all_from_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND is_solved = 1 AND is_deleted = 0"):
+    for problem in get_all_from_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
         print("Updating solved_at for problem {}".format(problem[0]))
         data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}", headers=headers).text
         soup = BeautifulSoup(data, 'html.parser')
-        table = soup.find('table', {'class': 'table-submissions'})
+        table = soup.find('table', {'class': 'table2'})
         if table is None:
             continue
         first_solution = '2030-01-01'
         for xx in table.find('tbody').find_all('tr'):
             tds = xx.find_all('td')
-            if 'Accepted' in tds[-3].find('span').text:
-                first_solution = min(tds[-5].text.strip(), first_solution)
+            if len(tds) == 2:
+                continue
+            print(tds)
+            if 'Accepted' in tds[3].find('div').text:
+                first_solution = min(tds[1].text.strip(), first_solution)
         if len(first_solution) < 15:
             first_solution = None
+
         con.cursor().execute("""
             UPDATE problem_cache
             SET solved_at = ?
@@ -192,12 +204,12 @@ def print_simple_stats():
     cur = con.cursor()
     cur.execute("""
         SELECT 
-            SUM(difficulty) FILTER(WHERE is_solved = 1) AS 'My Points',
-            SUM(difficulty) AS 'Total Points',
-            SUM(difficulty) FILTER(WHERE is_solved = 1)/SUM(difficulty)*100 AS percentage_points,
-            COUNT(difficulty) FILTER(WHERE is_solved = 1) AS 'My Problems',
-            COUNT(difficulty) AS 'Total Problems',
-            COUNT(difficulty) FILTER(WHERE is_solved = 1)*100/COUNT(difficulty) AS percentage_problems
+            SUM(difficulty_high) FILTER(WHERE solution_status = 'Accepted') AS 'My Points',
+            SUM(difficulty_high) AS 'Total Points',
+            SUM(difficulty_high) FILTER(WHERE solution_status = 'Accepted')/SUM(difficulty_high)*100 AS percentage_points,
+            COUNT(difficulty_high) FILTER(WHERE solution_status = 'Accepted') AS 'My Problems',
+            COUNT(difficulty_high) AS 'Total Problems',
+            COUNT(difficulty_high) FILTER(WHERE solution_status = 'Accepted')*100/COUNT(difficulty_high) AS percentage_problems
         FROM problem_cache
     """)
     res = cur.fetchone()
@@ -208,15 +220,15 @@ def print_simple_stats():
 
 def main():
     headers = {
-        "Cookie": "",
+        "Cookie": "_ga=GA1.2.134054394.1609543299; site24x7rumID=121259884176326.1654301691336.1653509277069; EduSiteCookie=db4f0b5a-4392-4bda-9368-937bc9968fe3; timezone=Europe%2FCopenhagen",
         "User-Agent": "Guardsmanpanda Problem Scraper"
     }
     #create_solution_cache()
-    #update_solution_cache(headers)
-    update_problem_created_at(headers)
-    update_problem_length(headers)
+    update_solution_cache(headers)
+    #update_problem_created_at(headers)
+    #update_problem_length(headers)
     update_problem_solved_at(headers)
-    download_latest_solutions(headers)
+    #download_latest_solutions(headers)
     print_simple_stats()
 
 
