@@ -220,7 +220,7 @@ def print_simple_stats():
 
 def main():
     headers = {
-        "Cookie": "_ga=GA1.2.134054394.1609543299; site24x7rumID=121259884176326.1654301691336.1653509277069; EduSiteCookie=db4f0b5a-4392-4bda-9368-937bc9968fe3; timezone=Europe%2FCopenhagen",
+        "Cookie": "",
         "User-Agent": "Guardsmanpanda Problem Scraper"
     }
     #create_solution_cache()
