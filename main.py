@@ -213,21 +213,28 @@ def compare_to_github_repo(url):
     cur = con.cursor()
     data = requests.get(url).text
     soup = BeautifulSoup(data, 'html.parser')
-    table = soup.find('table')
-    rows = table.find('tbody').find_all('tr')
     missing_problems = []
-    for row in rows:
-        problem_id = None
-        for td in row.find_all('td'):
-            if td.find('a') is not None and 'https://open.kattis.com/problems/' in td.find('a').attrs['href']:
-                problem_id = td.find('a').attrs['href'][33:]
-                break
-        if problem_id is not None:
-            cur.execute("SELECT * FROM problem_cache WHERE id = ?", (problem_id,))
-            res = cur.fetchone()
-            if res is None:
-                print("Missing problem {}".format(problem_id))
-
+    for table in soup.find_all('table'):
+        rows = table.find('tbody').find_all('tr')
+        for row in rows:
+            problem_id = None
+            for td in row.find_all('td'):
+                if td.find('a') is not None and 'https://open.kattis.com/problems/' in td.find('a').attrs['href']:
+                    problem_id = td.find('a').attrs['href'][33:]
+                    break
+            if problem_id is not None:
+                cur.execute("SELECT id, difficulty_high, solution_status, name FROM problem_cache WHERE id = ?", (problem_id,))
+                res = cur.fetchone()
+                if res is None:
+                    print("Missing problem {}".format(problem_id))
+                elif res[2] != 'Accepted':
+                    missing_problems.append(res)
+    print("*************************************")
+    print("Solution status for", url)
+    print(round(sum(x[1] for x in missing_problems)), "points missing")
+    for x in missing_problems:
+        print(x)
+    print("*************************************")
 
 def print_simple_stats():
     con = sqlite3.connect('problem_cache.db')
@@ -253,9 +260,13 @@ def main():
     # update_solution_cache()
     # update_problem_created_at()
     # update_problem_length()
-    update_problem_solved_at()
+    # update_problem_solved_at()
     # download_latest_solutions()
     compare_to_github_repo("https://github.com/JonSteinn/Kattis-Solutions")
+    compare_to_github_repo("https://github.com/matthewReff/Kattis-Problems")
+    compare_to_github_repo("https://github.com/RJTomk/Kattis")
+    compare_to_github_repo("https://github.com/Wabri/SomeKattisProblem")
+    compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
 
 
