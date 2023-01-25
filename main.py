@@ -5,8 +5,17 @@ import sqlite3
 import os
 
 
-def get_kattis_user_name(headers):
-    data = requests.get("https://open.kattis.com/", headers=headers).text
+def get_headers():
+    headers = {
+        "User-Agent": "Guardsmanpanda Problem Scraper"
+    }
+    with open('cookie.txt', 'r') as file:
+        headers["cookie"] = file.readline()
+    return headers
+
+
+def get_kattis_user_name():
+    data = requests.get("https://open.kattis.com/", headers=get_headers()).text
     soup = BeautifulSoup(data, 'html.parser')
     return soup.find('a', {'class': 'static_link'}).get('href')[7:]
 
@@ -40,13 +49,13 @@ def create_solution_cache():
     con.close()
 
 
-def update_solution_cache(headers):
+def update_solution_cache():
     con = sqlite3.connect('problem_cache.db')
     cur = con.cursor()
     url, page = "https://open.kattis.com/problems?page=",  0
     while True:
         print("Scraping page {}".format(page))
-        data = requests.get(url+str(page), headers=headers).text
+        data = requests.get(url+str(page), headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'class': 'table2'}).find('tbody').find_all('tr')
         found = 0
@@ -79,13 +88,13 @@ def update_solution_cache(headers):
     con.close()
 
 
-def update_problem_created_at(headers):
+def update_problem_created_at():
     con = sqlite3.connect('problem_cache.db')
     cur = con.cursor()
     cur.execute("SELECT id FROM problem_cache WHERE created_at IS NULL")
     for problem in cur.fetchall():
         print("Updating created_at for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/statistics/", headers=headers).text
+        data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/statistics/", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('section', {'id': 'toplist0'})
         if table is None:
@@ -105,11 +114,11 @@ def update_problem_created_at(headers):
     con.close()
 
 
-def update_problem_length(headers):
+def update_problem_length():
     con = sqlite3.connect('problem_cache.db')
     for problem in get_all_from_query("SELECT id FROM problem_cache WHERE description_length IS NULL"):
         print("Updating description_length for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/", headers=headers).text
+        data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         description = soup.find('div', {'class': 'problembody'}).text
         con.cursor().execute("""
@@ -121,12 +130,12 @@ def update_problem_length(headers):
     con.close()
 
 
-def update_problem_solved_at(headers):
+def update_problem_solved_at():
     con = sqlite3.connect('problem_cache.db')
-    user_name = get_kattis_user_name(headers)
+    user_name = get_kattis_user_name()
     for problem in get_all_from_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
         print("Updating solved_at for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}", headers=headers).text
+        data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'class': 'table2'})
         if table is None:
@@ -151,7 +160,7 @@ def update_problem_solved_at(headers):
     con.close()
 
 
-def download_latest_solutions(headers):
+def download_latest_solutions():
     # make directory 'solutions' if not exists
     if not os.path.exists('solutions'):
         os.makedirs('solutions')
@@ -160,9 +169,9 @@ def download_latest_solutions(headers):
     if os.path.exists('already_downloaded.txt'):
         with open('already_downloaded.txt', 'r', encoding='utf-8') as f:
             downloaded_solutions = f.read().splitlines()
-    user_name = get_kattis_user_name(headers)
+    user_name = get_kattis_user_name()
     for problem in get_all_from_query("SELECT id FROM problem_cache WHERE is_solved = 1 AND is_deleted = 0"):
-        data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}", headers=headers).text
+        data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'class': 'table-submissions'})
         if table is None:
@@ -171,19 +180,19 @@ def download_latest_solutions(headers):
             tds = xx.find_all('td')
             if 'Accepted' in tds[-3].find('span').text:
                 print("Downloading solution for problem {}".format(problem[0]))
-                download_specific_solution(headers, tds[0].find('a').text, downloaded_solutions)
+                download_specific_solution(tds[0].find('a').text, downloaded_solutions)
                 break
 
 
-def download_specific_solution(headers, solution_id, downloaded_solutions):
+def download_specific_solution( solution_id, downloaded_solutions):
     # skip already downloaded solutions
     if solution_id in downloaded_solutions:
         print("Skipping already downloaded solution {}".format(solution_id))
         return
-    data = requests.get(f"https://open.kattis.com/submissions/{solution_id}", headers=headers).text
+    data = requests.get(f"https://open.kattis.com/submissions/{solution_id}", headers=get_headers()).text
     soup = BeautifulSoup(data, 'html.parser')
     file_name = soup.find('h3').text
-    code = requests.get(f"https://open.kattis.com/submissions/{solution_id}/source/{file_name}", headers=headers).text
+    code = requests.get(f"https://open.kattis.com/submissions/{solution_id}/source/{file_name}", headers=get_headers()).text
     first_char = file_name[0]
     if not first_char.isalpha():
         first_char = '#'
@@ -199,6 +208,27 @@ def download_specific_solution(headers, solution_id, downloaded_solutions):
     return
 
 
+def compare_to_github_repo(url):
+    con = sqlite3.connect('problem_cache.db')
+    cur = con.cursor()
+    data = requests.get(url).text
+    soup = BeautifulSoup(data, 'html.parser')
+    table = soup.find('table')
+    rows = table.find('tbody').find_all('tr')
+    missing_problems = []
+    for row in rows:
+        problem_id = None
+        for td in row.find_all('td'):
+            if td.find('a') is not None and 'https://open.kattis.com/problems/' in td.find('a').attrs['href']:
+                problem_id = td.find('a').attrs['href'][33:]
+                break
+        if problem_id is not None:
+            cur.execute("SELECT * FROM problem_cache WHERE id = ?", (problem_id,))
+            res = cur.fetchone()
+            if res is None:
+                print("Missing problem {}".format(problem_id))
+
+
 def print_simple_stats():
     con = sqlite3.connect('problem_cache.db')
     cur = con.cursor()
@@ -209,27 +239,23 @@ def print_simple_stats():
             SUM(difficulty_high) FILTER(WHERE solution_status = 'Accepted')/SUM(difficulty_high)*100 AS percentage_points,
             COUNT(difficulty_high) FILTER(WHERE solution_status = 'Accepted') AS 'My Problems',
             COUNT(difficulty_high) AS 'Total Problems',
-            COUNT(difficulty_high) FILTER(WHERE solution_status = 'Accepted')*100/COUNT(difficulty_high) AS percentage_problems
+            COUNT(difficulty_high) FILTER(WHERE solution_status = 'Accepted')*100.0/COUNT(difficulty_high) AS percentage_problems
         FROM problem_cache
     """)
     res = cur.fetchone()
     print(f"My Points: {int(res[0])}, Total Points: {int(res[1])}, Percentage Points: {round(res[2], 1)}%")
-    print(f"My Problems: {int(res[3])}, Total Problems: {int(res[4])}, Percentage Problems: {res[5]}%")
+    print(f"My Problems: {int(res[3])}, Total Problems: {int(res[4])}, Percentage Problems: {round(res[5], 1)}%")
     con.close()
 
 
 def main():
-    headers = {
-        "User-Agent": "Guardsmanpanda Problem Scraper"
-    }
-    with open('cookie.txt', 'r') as file:
-        headers["cookie"] = file.readline()
-    #create_solution_cache()
-    update_solution_cache(headers)
-    #update_problem_created_at(headers)
-    #update_problem_length(headers)
-    update_problem_solved_at(headers)
-    #download_latest_solutions(headers)
+    # create_solution_cache()
+    # update_solution_cache()
+    # update_problem_created_at()
+    # update_problem_length()
+    update_problem_solved_at()
+    # download_latest_solutions()
+    compare_to_github_repo("https://github.com/JonSteinn/Kattis-Solutions")
     print_simple_stats()
 
 
