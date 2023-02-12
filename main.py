@@ -145,7 +145,6 @@ def update_problem_solved_at():
             tds = xx.find_all('td')
             if len(tds) == 2:
                 continue
-            print(tds)
             if 'Accepted' in tds[3].find('div').text:
                 first_solution = min(tds[1].text.strip(), first_solution)
         if len(first_solution) < 15:
@@ -225,10 +224,11 @@ def compare_to_github_repo(url):
             if problem_id is not None:
                 cur.execute("SELECT id, difficulty_high, solution_status, name FROM problem_cache WHERE id = ?", (problem_id,))
                 res = cur.fetchone()
-                if res is None:
-                    print("Missing problem {}".format(problem_id))
-                elif res[2] != 'Accepted':
+                if res is not None and res[2] != 'Accepted':
                     missing_problems.append(res)
+    con.close()
+    if len(missing_problems) == 0:
+        return
     print("*************************************")
     print("Solution status for", url)
     print(round(sum(x[1] for x in missing_problems)), "points missing")
@@ -257,15 +257,16 @@ def print_simple_stats():
 
 def main():
     # create_solution_cache()
-    # update_solution_cache()
+    update_solution_cache()
     # update_problem_created_at()
     # update_problem_length()
-    # update_problem_solved_at()
+    update_problem_solved_at()
     # download_latest_solutions()
     compare_to_github_repo("https://github.com/JonSteinn/Kattis-Solutions")
     compare_to_github_repo("https://github.com/matthewReff/Kattis-Problems")
     compare_to_github_repo("https://github.com/RJTomk/Kattis")
     compare_to_github_repo("https://github.com/Wabri/SomeKattisProblem")
+    compare_to_github_repo("https://github.com/donaldong/kattis")
     compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
 
