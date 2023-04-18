@@ -259,7 +259,7 @@ def main():
     # create_solution_cache()
     update_solution_cache()
     # update_problem_created_at()
-    # update_problem_length()
+    update_problem_length()
     update_problem_solved_at()
     # download_latest_solutions()
     compare_to_github_repo("https://github.com/JonSteinn/Kattis-Solutions")
