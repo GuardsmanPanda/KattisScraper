@@ -267,6 +267,7 @@ def main():
     compare_to_github_repo("https://github.com/RJTomk/Kattis")
     compare_to_github_repo("https://github.com/Wabri/SomeKattisProblem")
     compare_to_github_repo("https://github.com/donaldong/kattis")
+    compare_to_github_repo("https://github.com/RussellDash332/kattis")
     compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
 
