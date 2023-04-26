@@ -10,7 +10,7 @@ def get_headers():
         "User-Agent": "Guardsmanpanda Problem Scraper"
     }
     with open('cookie.txt', 'r') as file:
-        headers["cookie"] = file.readline()
+        headers["cookie"] = file.readline().strip()
     return headers
 
 
@@ -149,7 +149,6 @@ def update_problem_solved_at():
                 first_solution = min(tds[1].text.strip(), first_solution)
         if len(first_solution) < 15:
             first_solution = None
-
         con.cursor().execute("""
             UPDATE problem_cache
             SET solved_at = ?
@@ -208,11 +207,9 @@ def download_specific_solution( solution_id, downloaded_solutions):
 
 
 def compare_to_github_repo(url):
-    con = sqlite3.connect('problem_cache.db')
-    cur = con.cursor()
     data = requests.get(url).text
     soup = BeautifulSoup(data, 'html.parser')
-    missing_problems = []
+    problem_ids = []
     for table in soup.find_all('table'):
         rows = table.find('tbody').find_all('tr')
         for row in rows:
@@ -222,11 +219,30 @@ def compare_to_github_repo(url):
                     problem_id = td.find('a').attrs['href'][33:]
                     break
             if problem_id is not None:
-                cur.execute("SELECT id, difficulty_high, solution_status, name FROM problem_cache WHERE id = ?", (problem_id,))
-                res = cur.fetchone()
-                if res is not None and res[2] != 'Accepted':
-                    missing_problems.append(res)
+                problem_ids.append(problem_id)
+    print_repo_diff(url, problem_ids)
+
+
+def compare_to_github_folder(url):
+    data = requests.get(url.replace('tree', 'tree-commit-info'), headers={'Accept': 'application/json'}).json()
+    problem_ids = []
+    for key in data:
+        key = key.split('.')[0]
+        problem_ids.append(key)
+    print_repo_diff(url, problem_ids)
+
+
+def print_repo_diff(url, problem_ids):
+    con = sqlite3.connect('problem_cache.db')
+    cur = con.cursor()
+    missing_problems = []
+    for problem in problem_ids:
+        cur.execute("SELECT id, difficulty_high, solution_status, name FROM problem_cache WHERE id = ?", (problem,))
+        res = cur.fetchone()
+        if res is not None and res[2] != 'Accepted':
+            missing_problems.append(res)
     con.close()
+
     if len(missing_problems) == 0:
         return
     print("*************************************")
@@ -235,6 +251,7 @@ def compare_to_github_repo(url):
     for x in missing_problems:
         print(x)
     print("*************************************")
+
 
 def print_simple_stats():
     con = sqlite3.connect('problem_cache.db')
@@ -269,6 +286,8 @@ def main():
     compare_to_github_repo("https://github.com/donaldong/kattis")
     compare_to_github_repo("https://github.com/RussellDash332/kattis")
     compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
+    compare_to_github_folder('https://github.com/bradendubois/competitive-programming/tree/master/kattis')
+    compare_to_github_folder('https://github.com/PedroContipelli/Kattis/tree/master')
     print_simple_stats()
 
 
