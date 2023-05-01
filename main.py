@@ -237,9 +237,9 @@ def print_repo_diff(url, problem_ids):
     cur = con.cursor()
     missing_problems = []
     for problem in problem_ids:
-        cur.execute("SELECT id, difficulty_high, solution_status, name FROM problem_cache WHERE id = ?", (problem,))
+        cur.execute("SELECT id, difficulty_high, name FROM problem_cache WHERE id = ? AND solution_status != 'Accepted'", (problem,))
         res = cur.fetchone()
-        if res is not None and res[2] != 'Accepted':
+        if res is not None:
             missing_problems.append(res)
     con.close()
 
@@ -285,9 +285,13 @@ def main():
     compare_to_github_repo("https://github.com/Wabri/SomeKattisProblem")
     compare_to_github_repo("https://github.com/donaldong/kattis")
     compare_to_github_repo("https://github.com/RussellDash332/kattis")
-    compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     compare_to_github_folder('https://github.com/bradendubois/competitive-programming/tree/master/kattis')
     compare_to_github_folder('https://github.com/PedroContipelli/Kattis/tree/master')
+    compare_to_github_folder('https://github.com/iamvickynguyen/Kattis-Solutions/tree/master')
+    compare_to_github_folder('https://github.com/DongjiY/Kattis/tree/master/src')
+    # compare_to_github_folder('https://github.com/HermonMulat/Kattis/tree/master/src')
+    compare_to_github_folder('https://github.com/mpfeifer1/Kattis/tree/master')
+    compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
 
 
