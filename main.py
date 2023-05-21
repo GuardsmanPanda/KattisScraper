@@ -1,8 +1,48 @@
 from bs4 import BeautifulSoup
 from datetime import date
+import subprocess
 import requests
 import sqlite3
 import os
+
+
+class Repo:
+    def __init__(self, name):
+        self.name = name
+        self.path = "repos/" + name
+
+
+repo_list = [
+    Repo("RussellDash332/kattis"),
+    Repo("donaldong/kattis")
+]
+
+
+def create_and_sync_repos():
+    print("--------------------- Cloning Git Repos ------------------------")
+    if not os.path.exists('repos'):
+        os.mkdir('repos')
+    for rep in repo_list:
+        if not os.path.exists(rep.path):
+            res = subprocess.run(['git', 'clone', f"git@github.com:{rep.name}.git", rep.path], capture_output=True)
+            if res.returncode != 0:
+                print("Error cloning " + rep.name)
+                print(res.stderr)
+            else:
+                print("Successfully cloned " + rep.name)
+        else:
+            res = subprocess.Popen(['git', 'pull'], cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            res.wait()
+            if res.returncode == 0:
+                lines = res.stdout.readlines()
+                if len(lines) > 1:
+                    print("Updated " + rep.name)
+                    for line in lines:
+                        print(line)
+            else:
+                print("ERROR UPDATING: " + rep.name)
+                print(res.returncode)
+                print(res.stderr.readlines())
 
 
 def get_headers():
@@ -273,24 +313,28 @@ def print_simple_stats():
 
 
 def main():
+    # create_and_sync_repos()
     # create_solution_cache()
     update_solution_cache()
     # update_problem_created_at()
     update_problem_length()
     update_problem_solved_at()
     # download_latest_solutions()
-    compare_to_github_repo("https://github.com/JonSteinn/Kattis-Solutions")
-    compare_to_github_repo("https://github.com/matthewReff/Kattis-Problems")
-    compare_to_github_repo("https://github.com/RJTomk/Kattis")
-    compare_to_github_repo("https://github.com/Wabri/SomeKattisProblem")
-    compare_to_github_repo("https://github.com/donaldong/kattis")
-    compare_to_github_repo("https://github.com/RussellDash332/kattis")
-    compare_to_github_folder('https://github.com/bradendubois/competitive-programming/tree/master/kattis')
-    compare_to_github_folder('https://github.com/PedroContipelli/Kattis/tree/master')
-    compare_to_github_folder('https://github.com/iamvickynguyen/Kattis-Solutions/tree/master')
-    compare_to_github_folder('https://github.com/DongjiY/Kattis/tree/master/src')
+    # compare_to_github_repo("https://github.com/robertusbagaskara/kattis-solutions")
+    # compare_to_github_repo("https://github.com/JonSteinn/Kattis-Solutions")
+    # compare_to_github_repo("https://github.com/matthewReff/Kattis-Problems")
+    # compare_to_github_repo("https://github.com/RJTomk/Kattis")
+    # compare_to_github_repo("https://github.com/Wabri/SomeKattisProblem")
+    # compare_to_github_repo("https://github.com/donaldong/kattis")
+    # compare_to_github_repo("https://github.com/RussellDash332/kattis")
+    # compare_to_github_folder('https://github.com/bradendubois/competitive-programming/tree/master/kattis')
+    # compare_to_github_folder('https://github.com/ecly/kattis/tree/master')
+    # compare_to_github_folder('https://github.com/PedroContipelli/Kattis/tree/master')
+    # compare_to_github_folder('https://github.com/iamvickynguyen/Kattis-Solutions/tree/master')
+    # compare_to_github_folder('https://github.com/DongjiY/Kattis/tree/master/src')
     # compare_to_github_folder('https://github.com/HermonMulat/Kattis/tree/master/src')
-    compare_to_github_folder('https://github.com/mpfeifer1/Kattis/tree/master')
+    #compare_to_github_folder('https://github.com/mpfeifer1/Kattis/tree/master')
+    # compare_to_github_folder('https://github.com/kantuni/Kattis/tree/master')
     compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
 
