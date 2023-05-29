@@ -106,6 +106,8 @@ def update_solution_cache():
             solution_status = cols[1].find('div').text
             shortest_solution_length = cols[3].text
             diff_text = cols[7].find('span').text
+            if diff_text == '?':
+                continue
             difficulty_low = float(diff_text) if '-' not in diff_text else float(diff_text.split(' - ')[0])
             difficulty_high = float(diff_text) if '-' not in diff_text else float(diff_text.split(' - ')[1])
             cur.execute("""
