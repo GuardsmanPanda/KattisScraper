@@ -17,6 +17,8 @@ repo_list = [
     Repo("donaldong/kattis")
 ]
 
+mark_accepted_if_partial = ['mnist2class']
+
 
 def create_and_sync_repos():
     print("--------------------- Cloning Git Repos ------------------------")
@@ -104,6 +106,8 @@ def update_solution_cache():
             problem_id = cols[0].find('a').get('href')[10:]
             name = cols[0].find('a').text
             solution_status = cols[1].find('div').text
+            if solution_status == 'Partial' and problem_id  in mark_accepted_if_partial:
+                solution_status = 'Accepted'
             shortest_solution_length = cols[3].text
             diff_text = cols[7].find('span').text
             if diff_text == '?':
@@ -112,8 +116,8 @@ def update_solution_cache():
             difficulty_high = float(diff_text) if '-' not in diff_text else float(diff_text.split(' - ')[1])
             cur.execute("""
                 INSERT INTO problem_cache (
-                    id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, last_seen_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, last_seen_at, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_DATE)
                 ON CONFLICT(id) DO UPDATE SET
                     name = excluded.name,
                     shortest_solution_length = excluded.shortest_solution_length,
