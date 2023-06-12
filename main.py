@@ -80,9 +80,9 @@ def create_solution_cache():
             difficulty_high FLOAT,
             description_length INTEGER,
             shortest_solution_length INTEGER,
-            average_solution_length INTEGER,
             solution_status TEXT,
             solved_at TEXT,
+            from_contest TEXT,
             created_at TEXT,
             last_seen_at TEXT
         )
@@ -167,11 +167,14 @@ def update_problem_length():
         data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         description = soup.find('div', {'class': 'problembody'}).text
+        contest = soup.find('div', {'data-name': 'metadata_item-source'})
+        contest = contest.find('a').text if contest is not None else None
+        print(problem, contest)
         con.cursor().execute("""
             UPDATE problem_cache
-            SET description_length = ?
+            SET description_length = ?, from_contest = ?
             WHERE id = ?
-        """, (len(description), problem[0]))
+        """, (len(description), contest, problem[0]))
         con.commit()
     con.close()
 
@@ -341,6 +344,7 @@ def main():
     compare_to_github_folder('https://github.com/HermonMulat/Kattis/tree/master/src')
     compare_to_github_folder('https://github.com/mpfeifer1/Kattis/tree/master')
     compare_to_github_folder('https://github.com/kantuni/Kattis/tree/master')
+    compare_to_github_folder('https://github.com/aheschl1/Kattis-Solutions/tree/master')
     compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
 
