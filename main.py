@@ -323,7 +323,7 @@ def print_simple_stats():
 
 def main():
     # create_and_sync_repos()
-    # create_solution_cache()
+    create_solution_cache()
     update_solution_cache()
     # update_problem_created_at()
     update_problem_length()
