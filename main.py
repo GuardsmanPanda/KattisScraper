@@ -17,7 +17,7 @@ repo_list = [
     Repo("donaldong/kattis")
 ]
 
-mark_accepted_if_partial = ['mnist2class']
+mark_accepted_if_partial = ['mnist2class', 'mnist10class']
 
 
 def create_and_sync_repos():
@@ -323,7 +323,7 @@ def print_simple_stats():
 
 def main():
     # create_and_sync_repos()
-    create_solution_cache()
+    # create_solution_cache()
     update_solution_cache()
     # update_problem_created_at()
     update_problem_length()
@@ -344,6 +344,7 @@ def main():
     compare_to_github_folder('https://github.com/HermonMulat/Kattis/tree/master/src')
     compare_to_github_folder('https://github.com/mpfeifer1/Kattis/tree/master')
     compare_to_github_folder('https://github.com/kantuni/Kattis/tree/master')
+    compare_to_github_folder('https://github.com/ChrisVilches/Algorithms/tree/master/kattis')
     compare_to_github_folder('https://github.com/aheschl1/Kattis-Solutions/tree/master')
     compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
