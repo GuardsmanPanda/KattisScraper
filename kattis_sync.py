@@ -58,8 +58,7 @@ def update_solution_cache():
                     difficulty_high = excluded.difficulty_high,
                     solution_status = excluded.solution_status,
                     last_seen_at = excluded.last_seen_at
-            """, (
-            problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
+            """, (problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
             found += 1
         page += 1
         if found == 0:
@@ -114,8 +113,7 @@ def update_problem_length():
 def update_problem_solved_at():
     con = sqlite3.connect('problem_cache.db')
     user_name = get_kattis_user_name()
-    for problem in util.get_all_from_query(
-            "SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
+    for problem in util.get_all_from_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
         print("Updating solved_at for problem {}".format(problem[0]))
         data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}",
                             headers=get_headers()).text
