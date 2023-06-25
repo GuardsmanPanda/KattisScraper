@@ -9,9 +9,10 @@ import os
 
 
 class Repo:
-    def __init__(self, name, branch="master", prefix=None):
+    def __init__(self, name, branch="master", prefix=None, ignore_files = False):
         self.name = name
         self.branch = branch
+        self.ignore_files = ignore_files
         self.path = "repos/" + name
         self.solutions = self.path + "/" + (prefix if prefix else "")
         self.solved = 0
@@ -41,10 +42,10 @@ repo_list = [
     Repo("minidomo/Kattis"),
     Repo("mpfeifer1/Kattis"),
     Repo("PedroContipelli/Kattis"),
-    Repo("RJTomk/Kattis"),
+    Repo("RJTomk/Kattis", ignore_files=True),
     Repo("robertusbagaskara/kattis-solutions"),
     Repo("RussellDash332/kattis", branch='main'),
-    Repo("shakeelsamsu/kattis", branch='main'),
+    Repo("shakeelsamsu/kattis"),
     Repo("Wabri/SomeKattisProblem"),
     Repo("xCiaraG/Kattis"),
     Repo("BrandonTang89/Competitive_Programming_4_Solutions", branch='main'),
@@ -89,21 +90,22 @@ def find_unsolved_problems():
         seen = set()
         for x in os.walk(repo.solutions):
             waste, github_user, repo_name, *rest = x[0].split("/")
-            directory_name = rest[-1].lower()
-            if directory_name in all_problems:
-                if directory_name in seen:
-                    continue
-                seen.add(directory_name)
-                problem = all_problems[directory_name]
-                if problem[3] == "Accepted":
-                    repo.solved += 1
-                else:
-                    repo.points_missing += problem[1]
-                    unsolved.append([directory_name, problem[1], f"https://github.com/{github_user}/{repo_name}/tree/{repo.branch}/{'/'.join(rest)}"])
-                    repo.unsolved += 1
+            canonical, points, result = util.check_problem(rest[-1].lower())
+            if canonical in seen:
+                continue
+            seen.add(canonical)
+            if result == 'Solved':
+                repo.solved += 1
+            elif result == 'Unsolved':
+                repo.points_missing += points
+                unsolved.append([canonical, points, f"https://github.com/{github_user}/{repo_name}/tree/{repo.branch}/{'/'.join(rest)}"])
+                repo.unsolved += 1
+            if repo.ignore_files:
+                continue
+
             for file in x[2]:
                 parts = file.lower().split(".")
-                if len(parts) != 2 or parts[1] in ('md', 'out', 'in', 'txt', 'json', 'ans') or len(parts[0]) < 2 or parts[0].startswith('template'):
+                if len(parts) != 2 or parts[1] in ('md', 'out', 'in', 'txt', 'json', 'ans', 'sh', 'mod', 'toml', 'nix') or len(parts[0]) < 2 or parts[0].startswith('template'):
                     continue
 
                 if parts[0].startswith('kattis_'):

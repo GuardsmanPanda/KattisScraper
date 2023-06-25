@@ -36,9 +36,17 @@ def get_all_from_query(query: str):
 
 @lru_cache(maxsize=1000)
 def get_all_unsolved() -> dict:
-    return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
+    return {x[0]: x for x in get_all_from_query(
+        "SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
 
 
 @lru_cache(maxsize=1000)
 def get_all_problems() -> dict:
     return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
+
+
+def check_problem(text: str, is_file=False):
+    all_problems = get_all_problems()
+    if text in all_problems:
+        return text, all_problems[text][1], 'Solved' if all_problems[text][3] == 'Accepted' else 'Unsolved'
+    return text, -1, 'Unknown'
