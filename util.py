@@ -36,8 +36,7 @@ def get_all_from_query(query: str):
 
 @lru_cache(maxsize=1000)
 def get_all_unsolved() -> dict:
-    return {x[0]: x for x in get_all_from_query(
-        "SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
+    return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
 
 
 @lru_cache(maxsize=1000)
@@ -45,8 +44,64 @@ def get_all_problems() -> dict:
     return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
 
 
-def check_problem(text: str, is_file=False):
+prefix_removals = ['kattis_', 'katttis_', '_']
+ignore_extensions = ['md', 'out', 'in', 'txt', 'json', 'ans', 'sh', 'mod', 'toml', 'nix', 'yml', 'ignore']
+ignore_directories = {
+    'heads',
+    'hooks',
+    'info',
+    'KattisRSSParser', 'KattisRSSNotifier',
+    'logs',
+    'origin',
+    'pack',
+    'repo-scripts',
+    'scripts',
+    'templates','template', 'test',
+    'verbose',
+}
+ignore_files = {
+    'build', 'build_wiki',
+    'directory_reader',
+    'generate_readme',
+    'kattio',
+    'license',
+    'main',
+    'readme_generator',
+    'scrapper', 'sodasurpler',
+    'test_gen', 'test',
+}
+ignore_file_parts = [
+    'scl2022','scl2021',
+    'vjudge',
+]
+
+
+def check_problem(text: str, directory_name=None) -> (str, float, str):
+    if len(text) >= 38 or text.startswith('.') or (directory_name is not None and directory_name.startswith('.')):
+        return text, -1, 'Ignored'
+
+    if directory_name is not None and directory_name in ignore_directories:
+        return text, -1, 'Ignored'
+
+    for prefix in prefix_removals:
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+
+    parts = text.split('.')
+    name, ext = parts[0], parts[-1]
+
+    if len(name) < 3 or ext in ignore_extensions:
+        return text, -1, 'Ignored'
+
     all_problems = get_all_problems()
-    if text in all_problems:
-        return text, all_problems[text][1], 'Solved' if all_problems[text][3] == 'Accepted' else 'Unsolved'
-    return text, -1, 'Unknown'
+    if name in all_problems:
+        return name, all_problems[name][1], 'Solved' if all_problems[name][3] == 'Accepted' else 'Unsolved'
+
+    if name in ignore_files:
+        return text, -1, 'Ignored'
+
+    for part in ignore_file_parts:
+        if part in name:
+            return text, -1, 'Ignored'
+
+    return name, -1, 'Unknown' if directory_name is not None else 'Ignored'

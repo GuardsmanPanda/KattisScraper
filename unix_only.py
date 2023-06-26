@@ -9,7 +9,7 @@ import os
 
 
 class Repo:
-    def __init__(self, name, branch="master", prefix=None, ignore_files = False):
+    def __init__(self, name, branch="master", prefix=None, ignore_files=False):
         self.name = name
         self.branch = branch
         self.ignore_files = ignore_files
@@ -78,54 +78,42 @@ def create_and_sync_repos():
                 print(res.returncode)
                 print(res.stderr.readlines())
 
-        res = subprocess.Popen(['git', '--no-pager', 'log', '-1', '--format="%ai"'],cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        res = subprocess.Popen(['git', '--no-pager', 'log', '-1', '--format="%ai"'], cwd=rep.path,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         time = res.stdout.readlines()[0].decode('utf-8').strip('\n')
         rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').astimezone(ZoneInfo('localtime'))
 
 
+def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, file=None):
+    if canonical in seen or result == 'Ignored':
+        return
+    seen.add(canonical)
+    if result == 'Solved':
+        repo.solved += 1
+    elif result == 'Unsolved':
+        repo.points_missing += points
+        repo.unsolved += 1
+        if file is None:
+            unsolved.append([canonical, points, f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}"])
+        else:
+            unsolved.append([canonical, points,f"https://github.com/{repo.name}/blob/{repo.branch}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}"])
+    else:
+        repo.unknown.append((canonical, file, path[-1]))
+
+
 def find_unsolved_problems():
-    all_problems = util.get_all_problems()
     for repo in repo_list:
         unsolved = []
         seen = set()
         for x in os.walk(repo.solutions):
             waste, github_user, repo_name, *rest = x[0].split("/")
             canonical, points, result = util.check_problem(rest[-1].lower())
-            if canonical in seen:
-                continue
-            seen.add(canonical)
-            if result == 'Solved':
-                repo.solved += 1
-            elif result == 'Unsolved':
-                repo.points_missing += points
-                unsolved.append([canonical, points, f"https://github.com/{github_user}/{repo_name}/tree/{repo.branch}/{'/'.join(rest)}"])
-                repo.unsolved += 1
+            handle_repo_solution(canonical, points, result, repo, rest, seen, unsolved)
             if repo.ignore_files:
                 continue
-
             for file in x[2]:
-                parts = file.lower().split(".")
-                if len(parts) != 2 or parts[1] in ('md', 'out', 'in', 'txt', 'json', 'ans', 'sh', 'mod', 'toml', 'nix') or len(parts[0]) < 2 or parts[0].startswith('template'):
-                    continue
-
-                if parts[0].startswith('kattis_'):
-                    parts[0] = parts[0][7:]
-                parts[0] = parts[0].replace('_', '')
-                if parts[0] in seen:
-                    continue
-                seen.add(parts[0])
-
-                if parts[0] in all_problems:
-                    problem = all_problems[parts[0]]
-                    if problem[3] == "Accepted":
-                        repo.solved += 1
-                    else:
-                        repo.points_missing += problem[1]
-                        unsolved.append([parts[0], problem[1], f"https://github.com/{github_user}/{repo_name}/blob/{repo.branch}{('/' + '/'.join(rest)) if rest[0] != '' else ''}/{file}"])
-                        repo.unsolved += 1
-                else:
-                    if 'vjudge' not in parts[0] and '-' not in parts[0] and rest[-1] != 'hooks':
-                        repo.unknown.append((parts[0], file, rest[-1]))
+                canonical, points, result = util.check_problem(file.lower(), rest[-1])
+                handle_repo_solution(canonical, points, result, repo, rest, seen, unsolved, file=file)
         if len(unsolved) > 0:
             print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
             print("🔱 Unsolved Problems In " + repo.name)
@@ -135,14 +123,15 @@ def find_unsolved_problems():
 def print_repo_stats():
     find_unsolved_problems()
     rows = []
-    for repo in sorted(repo_list, key=lambda x: x.last_commit):
+    for repo in sorted(repo_list, key=lambda x: x.last_commit if x.last_commit is not None else datetime.min):
         rows.append((repo.name, repo.solved, repo.unsolved, round(repo.points_missing), repo.last_commit))
         if len(repo.unknown) > 0:
             print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
             print('', repo.name)
             print("  Unknown: " + str(repo.unknown))
     print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
-    print(tabulate(rows, headers=["Repository Name", "Solved", "Unsolved", "Points", "Last Commit"], tablefmt='outline'))
+    print(
+        tabulate(rows, headers=["Repository Name", "Solved", "Unsolved", "Points", "Last Commit"], tablefmt='outline'))
 
 
 def main():
@@ -152,7 +141,7 @@ def main():
         # kattis_sync.update_problem_created_at()
         kattis_sync.update_problem_length()
         kattis_sync.update_problem_solved_at()
-    create_and_sync_repos()
+    # create_and_sync_repos()
     print_repo_stats()
 
 
