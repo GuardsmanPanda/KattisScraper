@@ -141,7 +141,7 @@ def main():
         # kattis_sync.update_problem_created_at()
         kattis_sync.update_problem_length()
         kattis_sync.update_problem_solved_at()
-    # create_and_sync_repos()
+    create_and_sync_repos()
     print_repo_stats()
 
 
