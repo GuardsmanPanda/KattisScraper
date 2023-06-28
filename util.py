@@ -65,21 +65,30 @@ ignore_files = {
     'authors',
     'build', 'buildwiki','breadthfirstsearch',
     'directoryreader','deque','djikstra',
+    'error',
     'generatereadme',
     'kattio',
     'license',
     'main',
     'node',
+    'output',
     'pair',
     'readmegenerator',
     'scrapper', 'sodasurpler',
-    'testgen', 'test',
+    'testgen', 'test','template',
+    'version',
+    'wronganswer',
 }
 ignore_file_parts = [
     'noi2020', 'neo-',
     'scl2022', 'scl2021',
     'vjudge',
 ]
+
+name_mapping = {
+    'eightqueens': '8queens',
+    'zebraocelots': 'zebrasocelots'
+}
 
 
 def check_problem(text: str, directory_name=None) -> (str, float, str):
@@ -111,6 +120,9 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
 
     if name in ignore_files:
         return text, -1, 'Ignored'
+
+    if name in name_mapping:
+        return name_mapping[name],  all_problems[name_mapping[name]][1], 'Solved' if all_problems[name_mapping[name]][3] == 'Accepted' else 'Unsolved'
 
     for part in ignore_file_parts:
         if part in name:
