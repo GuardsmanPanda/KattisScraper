@@ -46,8 +46,8 @@ def get_all_problems() -> dict:
     return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
 
 
-prefix_removals = ['kattis_', 'katttis_']
-ignore_extensions = ['md', 'out', 'in', 'txt', 'json', 'ans', 'sh', 'mod', 'toml', 'nix', 'yml', 'ignore']
+part_removals = ['kattis_', 'katttis_','-sm','-node', '_']
+ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'toml', 'nix', 'yml', 'ignore', 'ipynb']
 ignore_directories = {
     'heads',
     'hooks',
@@ -62,18 +62,21 @@ ignore_directories = {
     'verbose',
 }
 ignore_files = {
-    'build', 'build_wiki',
-    'directoryreader',
+    'authors',
+    'build', 'buildwiki','breadthfirstsearch',
+    'directoryreader','deque','djikstra',
     'generatereadme',
     'kattio',
     'license',
     'main',
+    'node',
+    'pair',
     'readmegenerator',
     'scrapper', 'sodasurpler',
     'testgen', 'test',
 }
 ignore_file_parts = [
-    'noi2020',
+    'noi2020', 'neo-',
     'scl2022', 'scl2021',
     'vjudge',
 ]
@@ -86,11 +89,10 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
     if directory_name is not None and directory_name in ignore_directories:
         return text, -1, 'Ignored'
 
-    for prefix in prefix_removals:
-        if text.startswith(prefix):
-            text = text[len(prefix):]
-
-    parts = text.replace('_', '').split('.')
+    parts = text
+    for part in part_removals:
+        parts = parts.replace(part, '')
+    parts = parts.split('.')
     name, ext = parts[0], parts[-1]
 
     if len(name) < 3 or name.isdigit() or ext in ignore_extensions:

@@ -94,9 +94,10 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
         repo.points_missing += points
         repo.unsolved += 1
         if file is None:
-            unsolved.append([canonical, points, f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}"])
+            unsolved.append([canonical, points, '', f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}"])
         else:
-            unsolved.append([canonical, points,f"https://github.com/{repo.name}/blob/{repo.branch}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}"])
+            file_size = os.path.getsize(f"repos/{repo.name}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}")
+            unsolved.append([canonical, points, file_size, f"https://github.com/{repo.name}/blob/{repo.branch}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}"])
     else:
         repo.unknown.append((canonical, file, path[-1]))
 
@@ -117,7 +118,7 @@ def find_unsolved_problems():
         if len(unsolved) > 0:
             print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
             print("🔱 Unsolved Problems In " + repo.name)
-            print(tabulate(sorted(unsolved), headers=["Problem ID", "Points", "Link"], tablefmt='outline', floatfmt='0.1f'))
+            print(tabulate(sorted(unsolved), headers=["Problem ID", "Points", "Size", "Link"], tablefmt='outline', floatfmt='0.1f'))
 
 
 def print_repo_stats():

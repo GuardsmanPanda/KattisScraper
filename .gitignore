@@ -1,8 +1,9 @@
-problem_cache.db
+/__pycache__/
 /.idea
-already_downloaded.txt
-/solutions
-cookie.txt
-problem_cache.db-journal
 /repos
+/solutions
+already_downloaded.txt
+cookie.txt
+problem_cache.db
+problem_cache.db-journal
 test.py
