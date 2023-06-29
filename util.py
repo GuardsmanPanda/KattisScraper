@@ -75,7 +75,7 @@ ignore_files = {
     'pair',
     'readmegenerator',
     'scrapper', 'sodasurpler',
-    'testgen', 'test','template',
+    'testgen', 'test', 'template',
     'version',
     'wronganswer',
 }
@@ -87,6 +87,7 @@ ignore_file_parts = [
 
 name_mapping = {
     'eightqueens': '8queens',
+    'greetingcards': 'greetingcard',
     'zebraocelots': 'zebrasocelots'
 }
 
