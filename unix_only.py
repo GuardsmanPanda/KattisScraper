@@ -25,7 +25,10 @@ class Repo:
 # https://github.com/truongcongthanh2000/TrainACM-ICPC-OLP
 repo_list = [
     Repo("aheschl1/Kattis-Solutions", branch='main'),
+    Repo("aiviaghost/Kattis_solutions"),
+    Repo("BC46/kattis-solutions", branch='main'),
     Repo("bradendubois/competitive-programming"),
+    Repo("chonkykai/General-Coding", branch='main', prefix='open_kattis'),
     Repo("ChrisVilches/Algorithms", prefix="kattis"),
     Repo("cs-un/Kattis"),
     Repo("dakoval/Kattis-Solutions"),
@@ -37,6 +40,7 @@ repo_list = [
     Repo("JonSteinn/Kattis-Solutions"),
     Repo("kantuni/Kattis"),
     Repo("KentGrigo/Kattis", branch='main'),
+    Repo("leslieyip02/kattis"),
     Repo("matthewReff/Kattis-Problems"),
     Repo("meysamaghighi/Kattis"),
     Repo("minidomo/Kattis"),
