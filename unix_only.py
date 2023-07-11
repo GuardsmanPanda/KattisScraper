@@ -37,11 +37,13 @@ repo_list = [
     Repo("ecly/kattis"),
     Repo("HermonMulat/Kattis"),
     Repo("iamvickynguyen/Kattis-Solutions"),
+    Repo("jerryxu20/kattis", branch='main'),
     Repo("JonSteinn/Kattis-Solutions"),
     Repo("kantuni/Kattis"),
     Repo("KentGrigo/Kattis", branch='main'),
     Repo("leslieyip02/kattis"),
     Repo("matthewReff/Kattis-Problems"),
+    Repo("Mdan12/Kattis-solutions", branch='main'),
     Repo("meysamaghighi/Kattis"),
     Repo("minidomo/Kattis"),
     Repo("mpfeifer1/Kattis"),
@@ -50,6 +52,7 @@ repo_list = [
     Repo("robertusbagaskara/kattis-solutions"),
     Repo("RussellDash332/kattis", branch='main'),
     Repo("shakeelsamsu/kattis"),
+    Repo("versenyi98/kattis-solutions", branch='main', prefix='solutions'),
     Repo("Wabri/SomeKattisProblem"),
     Repo("xCiaraG/Kattis"),
     Repo("BrandonTang89/Competitive_Programming_4_Solutions", branch='main'),
@@ -141,12 +144,12 @@ def print_repo_stats():
 
 def main():
     args = sys.argv[1:]
+    create_and_sync_repos()
     if '--scrape' in args:
         kattis_sync.update_solution_cache()
         # kattis_sync.update_problem_created_at()
         kattis_sync.update_problem_length()
         kattis_sync.update_problem_solved_at()
-    create_and_sync_repos()
     print_repo_stats()
 
 

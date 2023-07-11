@@ -1,4 +1,5 @@
 from functools import lru_cache
+import wrong_to_right_map
 import sqlite3
 import os
 import re
@@ -46,16 +47,17 @@ def get_all_problems() -> dict:
     return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
 
 
-part_removals = ['kattis_', 'katttis_','-sm','-node', '_']
-ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'toml', 'nix', 'yml', 'ignore', 'ipynb']
+part_removals = ['kattis_', 'katttis_', '-sm', '-node', '_', '(', ')', '-']
+ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore',
+                     'ipynb']
 ignore_directories = {
     'heads',
     'hooks',
-    'info',
+    'info', 'incomplete',
     'KattisRSSParser', 'KattisRSSNotifier',
     'logs',
     'origin',
-    'pack',
+    'pack', 'PO-Kattis',
     'repo-scripts',
     'scripts',
     'templates', 'template', 'test',
@@ -63,19 +65,20 @@ ignore_directories = {
 }
 ignore_files = {
     'authors',
-    'build', 'buildwiki','breadthfirstsearch',
-    'directoryreader','deque','djikstra',
+    'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy',
+    'directoryreader', 'deque', 'djikstra',
     'error',
     'generatereadme',
+    'in',
     'kattio',
     'license',
     'main',
-    'node',
+    'node','neolexicographicordering',
     'output',
     'pair',
     'readmegenerator',
-    'scrapper', 'sodasurpler',
-    'testgen', 'test', 'template',
+    'scrapper', 'sodasurpler', 'spanavac',
+    'testgen', 'test', 'template', 'testingtool',
     'version',
     'wronganswer',
 }
@@ -85,11 +88,7 @@ ignore_file_parts = [
     'vjudge',
 ]
 
-name_mapping = {
-    'eightqueens': '8queens',
-    'greetingcards': 'greetingcard',
-    'zebraocelots': 'zebrasocelots'
-}
+name_mapping = wrong_to_right_map.name_mappings
 
 
 def check_problem(text: str, directory_name=None) -> (str, float, str):
@@ -123,7 +122,8 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
         return text, -1, 'Ignored'
 
     if name in name_mapping:
-        return name_mapping[name],  all_problems[name_mapping[name]][1], 'Solved' if all_problems[name_mapping[name]][3] == 'Accepted' else 'Unsolved'
+        return name_mapping[name], all_problems[name_mapping[name]][1], 'Solved' if all_problems[name_mapping[name]][
+                                                                                        3] == 'Accepted' else 'Unsolved'
 
     for part in ignore_file_parts:
         if part in name:
