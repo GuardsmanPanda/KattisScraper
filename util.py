@@ -49,7 +49,7 @@ def get_all_problems() -> dict:
 
 part_removals = ['kattis_', 'katttis_', '-sm', '-node', '_', '(', ')', '-']
 ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore',
-                     'ipynb']
+                     'h', 'ipynb', 'lock', 'class']
 ignore_directories = {
     'heads',
     'hooks',
@@ -60,27 +60,28 @@ ignore_directories = {
     'pack', 'PO-Kattis',
     'repo-scripts',
     'scripts',
-    'templates', 'template', 'test',
+    'templates', 'template', 'test', 'todo',
     'verbose',
 }
 ignore_files = {
     'authors',
-    'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy',
+    'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute',
+    'comp', 'check',
     'directoryreader', 'deque', 'djikstra',
     'error',
     'generatereadme',
-    'in',
+    'in', 'info',
     'kattio',
     'license',
-    'main',
-    'node','neolexicographicordering',
-    'output',
-    'pair',
+    'main', 'makefile', 'matrixmult',
+    'node', 'neolexicographicordering',
+    'output', 'oops',
+    'pair','point2d',
     'readmegenerator',
-    'scrapper', 'sodasurpler', 'spanavac',
-    'testgen', 'test', 'template', 'testingtool',
+    'scrapper', 'spanavac',
+    'testgen', 'test', 'template', 'testingtool', 'tle',
     'version',
-    'wronganswer',
+    'wronganswer', 'why',
 }
 ignore_file_parts = [
     'noi2020', 'neo-',

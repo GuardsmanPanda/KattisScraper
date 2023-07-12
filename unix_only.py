@@ -17,6 +17,7 @@ class Repo:
         self.solutions = self.path + "/" + (prefix if prefix else "")
         self.solved = 0
         self.unsolved = 0
+        self.points_acquired = 0.0
         self.points_missing = 0.0
         self.unknown = []
         self.last_commit = None
@@ -88,7 +89,7 @@ def create_and_sync_repos():
         res = subprocess.Popen(['git', '--no-pager', 'log', '-1', '--format="%ai"'], cwd=rep.path,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         time = res.stdout.readlines()[0].decode('utf-8').strip('\n')
-        rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').astimezone(ZoneInfo('localtime'))
+        rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').replace(tzinfo=None)
 
 
 def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, file=None):
@@ -97,6 +98,7 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
     seen.add(canonical)
     if result == 'Solved':
         repo.solved += 1
+        repo.points_acquired += points
     elif result == 'Unsolved':
         repo.points_missing += points
         repo.unsolved += 1
@@ -132,19 +134,20 @@ def print_repo_stats():
     find_unsolved_problems()
     rows = []
     for repo in sorted(repo_list, key=lambda x: x.last_commit if x.last_commit is not None else datetime.min):
-        rows.append((repo.name, repo.solved, repo.unsolved, round(repo.points_missing), repo.last_commit))
+        rows.append((repo.name, repo.solved, round(repo.points_acquired), repo.unsolved, round(repo.points_missing), repo.last_commit))
         if len(repo.unknown) > 0:
             print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
             print('', repo.name)
             print("  Unknown: " + str(repo.unknown))
     print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
     print(
-        tabulate(rows, headers=["Repository Name", "Solved", "Unsolved", "Points", "Last Commit"], tablefmt='outline'))
+        tabulate(rows, headers=["Repository Name", "Solved", "Points", "Unsolved", "Points", "Last Commit"], tablefmt='outline'))
 
 
 def main():
     args = sys.argv[1:]
-    create_and_sync_repos()
+    if '--skip' not in args:
+        create_and_sync_repos()
     if '--scrape' in args:
         kattis_sync.update_solution_cache()
         # kattis_sync.update_problem_created_at()
