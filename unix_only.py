@@ -138,7 +138,9 @@ def print_repo_stats():
         if len(repo.unknown) > 0:
             print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
             print('', repo.name)
-            print("  Unknown: " + str(repo.unknown))
+            print("  Unknown: ")
+            for x in sorted(repo.unknown):
+                print(x)
     print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
     print(
         tabulate(rows, headers=["Repository Name", "Solved", "Points", "Unsolved", "Points", "Last Commit"], tablefmt='outline'))
