@@ -34,7 +34,7 @@ repo_list = [
     Repo("cs-un/Kattis"),
     Repo("dakoval/Kattis-Solutions"),
     Repo("donaldong/kattis", prefix="solutions"),
-    Repo("DongjiY/Kattis"),
+    Repo("DongjiY/Kattis", branch='main'),
     Repo("ecly/kattis"),
     Repo("HermonMulat/Kattis"),
     Repo("iamvickynguyen/Kattis-Solutions"),
@@ -43,6 +43,7 @@ repo_list = [
     Repo("kantuni/Kattis"),
     Repo("KentGrigo/Kattis", branch='main'),
     Repo("leslieyip02/kattis"),
+    Repo("lisansulistiani/Kattis", branch='main'),
     Repo("matthewReff/Kattis-Problems"),
     Repo("Mdan12/Kattis-solutions", branch='main'),
     Repo("meysamaghighi/Kattis"),
@@ -83,7 +84,6 @@ def create_and_sync_repos():
                         print('  ', line.decode('utf-8').strip('\n'))
             else:
                 print("ERROR UPDATING: " + rep.name)
-                print(res.returncode)
                 print(res.stderr.readlines())
 
         res = subprocess.Popen(['git', '--no-pager', 'log', '-1', '--format="%ai"'], cwd=rep.path,
@@ -133,7 +133,7 @@ def find_unsolved_problems():
 def print_repo_stats():
     find_unsolved_problems()
     rows = []
-    for repo in sorted(repo_list, key=lambda x: x.last_commit if x.last_commit is not None else datetime.min):
+    for repo in sorted(repo_list, key=lambda xx: xx.points_missing):
         rows.append((repo.name, repo.solved, round(repo.points_acquired), repo.unsolved, round(repo.points_missing), repo.last_commit))
         if len(repo.unknown) > 0:
             print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")

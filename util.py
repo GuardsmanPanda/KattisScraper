@@ -74,14 +74,25 @@ ignore_files = {
     'kattio',
     'license',
     'main', 'makefile', 'matrixmult',
-    'node', 'neolexicographicordering',
+    'node',
     'output', 'oops',
     'pair','point2d',
     'readmegenerator',
-    'scrapper', 'spanavac',
+    'scrapper', 'sticky',
     'testgen', 'test', 'template', 'testingtool', 'tle',
     'version',
     'wronganswer', 'why',
+
+    # Old problems?
+    'androids', 'alphabetical',
+    'casual',
+    'duplicates',
+    'happytrails',
+    'iterm',
+    'monstertruck', 'multiplesof3or5',
+    'neolexicographicordering',
+    'primedrive', 'plantina',
+    'spanavac', 'sumsquaredifference'
 }
 ignore_file_parts = [
     'noi2020', 'neo-',
