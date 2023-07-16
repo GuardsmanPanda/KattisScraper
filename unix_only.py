@@ -28,12 +28,13 @@ repo_list = [
     Repo("aheschl1/Kattis-Solutions", branch='main'),
     Repo("aiviaghost/Kattis_solutions"),
     Repo("BC46/kattis-solutions", branch='main'),
-    Repo("bradendubois/competitive-programming"),
+    Repo("bradendubois/competitive-programming", prefix='kattis'),
+    Repo("chiralcentre/Kattis", branch='main'),
     Repo("chonkykai/General-Coding", branch='main', prefix='open_kattis'),
     Repo("ChrisVilches/Algorithms", prefix="kattis"),
-    Repo("cs-un/Kattis"),
-    Repo("dakoval/Kattis-Solutions"),
-    Repo("donaldong/kattis", prefix="solutions"),
+    # Repo("cs-un/Kattis"),
+    # Repo("dakoval/Kattis-Solutions"),
+    Repo("donaldong/kattis", branch='main', prefix="solutions"),
     Repo("DongjiY/Kattis", branch='main'),
     Repo("ecly/kattis"),
     Repo("HermonMulat/Kattis"),
@@ -43,6 +44,7 @@ repo_list = [
     Repo("kantuni/Kattis"),
     Repo("KentGrigo/Kattis", branch='main'),
     Repo("leslieyip02/kattis"),
+    Repo("LoiNguyennn/CompetitiveProgramming4_Solutions", branch='main', prefix="Kattis_OJ"),
     Repo("lisansulistiani/Kattis", branch='main'),
     Repo("matthewReff/Kattis-Problems"),
     Repo("Mdan12/Kattis-solutions", branch='main'),
@@ -102,10 +104,12 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
     elif result == 'Unsolved':
         repo.points_missing += points
         repo.unsolved += 1
+        local_location = f"repos/{repo.name}{('/' + '/'.join(path)) if path[0] != '' else ''}/"
         if file is None:
-            unsolved.append([canonical, points, '', f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}"])
+            file_size = os.path.getsize(local_location + os.listdir(local_location)[0])
+            unsolved.append([canonical, points, f'-{file_size}', f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}"])
         else:
-            file_size = os.path.getsize(f"repos/{repo.name}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}")
+            file_size = os.path.getsize(local_location + file)
             unsolved.append([canonical, points, file_size, f"https://github.com/{repo.name}/blob/{repo.branch}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}"])
     else:
         repo.unknown.append((canonical, file, path[-1]))

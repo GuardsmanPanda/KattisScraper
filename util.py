@@ -64,7 +64,7 @@ ignore_directories = {
     'verbose',
 }
 ignore_files = {
-    'authors',
+    'authors', 'acc', 'answer',
     'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute',
     'comp', 'check',
     'directoryreader', 'deque', 'djikstra',
@@ -78,7 +78,7 @@ ignore_files = {
     'output', 'oops',
     'pair','point2d',
     'readmegenerator',
-    'scrapper', 'sticky',
+    'scrapper', 'sticky', 'secret', 'stringhashing',
     'testgen', 'test', 'template', 'testingtool', 'tle',
     'version',
     'wronganswer', 'why',
@@ -89,10 +89,10 @@ ignore_files = {
     'duplicates',
     'happytrails',
     'iterm',
-    'monstertruck', 'multiplesof3or5',
+    'monstertruck',
     'neolexicographicordering',
     'primedrive', 'plantina',
-    'spanavac', 'sumsquaredifference'
+    'spanavac',
 }
 ignore_file_parts = [
     'noi2020', 'neo-',

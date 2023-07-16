@@ -1,15 +1,14 @@
 from random import randint
 import subprocess
-import os
+
+compiled = set()
 
 
 def generate_data():
     """Generate test data and write it to data.txt"""
     n = randint(1, 1)
     with open('data.txt', 'w') as f:
-        f.write(f'{n}\n')
-        for _ in range(n):
-            f.write(f'{randint(1, 1000)} ')
+        f.write(f'{randint(2, 10)} {randint(2, 10)}')
 
 
 def run_python_and_capture_output(path):
@@ -20,11 +19,11 @@ def run_python_and_capture_output(path):
 
 
 def run_java_and_capture_output(name):
-    if not os.path.isfile(name + '.class'):
-        print("compiling")
+    if name not in compiled:
         result = subprocess.run(['javac', name + '.java'], capture_output=True)
         if result.returncode != 0:
             raise Exception(result.stderr.decode('utf-8'))
+        compiled.add(name)
 
     result = subprocess.run(['java', name], input=open('data.txt', 'rb').read(), capture_output=True)
     if result.returncode != 0:
@@ -36,7 +35,7 @@ def main():
     for _ in range(100):
         generate_data()
         result_other = run_python_and_capture_output('other_code.py')
-        result_me = run_java_and_capture_output('data')
+        result_me = run_java_and_capture_output('factorialpower')
         if result_me == result_other:
             print('OK')
         else:
