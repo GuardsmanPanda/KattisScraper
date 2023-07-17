@@ -47,26 +47,26 @@ def get_all_problems() -> dict:
     return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
 
 
-part_removals = ['kattis_', 'katttis_', '-sm', '-node', '_', '(', ')', '-']
+part_removals = ['kattis_', 'katttis_', '-sm', '-node', '_', '(', ')', '-', ' ']
 ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore',
                      'h', 'ipynb', 'lock', 'class']
 ignore_directories = {
-    'heads',
-    'hooks',
-    'info', 'incomplete',
+    '_meta',
+    'heads', 'hooks',
+    'info', 'incomplete', 'ICPC_2019',
     'KattisRSSParser', 'KattisRSSNotifier',
     'logs',
     'origin',
     'pack', 'PO-Kattis',
     'repo-scripts',
     'scripts',
-    'templates', 'template', 'test', 'todo',
+    'templates', 'template', 'test', 'todo', 'tests',
     'verbose',
 }
 ignore_files = {
     'authors', 'acc', 'answer',
     'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute',
-    'comp', 'check',
+    'comp', 'check', 'contest4solutions',
     'directoryreader', 'deque', 'djikstra',
     'error',
     'generatereadme',
@@ -78,20 +78,21 @@ ignore_files = {
     'output', 'oops',
     'pair','point2d',
     'readmegenerator',
-    'scrapper', 'sticky', 'secret', 'stringhashing',
+    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions',
     'testgen', 'test', 'template', 'testingtool', 'tle',
     'version',
     'wronganswer', 'why',
 
     # Old problems?
     'androids', 'alphabetical',
-    'casual',
+    'casual', 'cesta',
     'duplicates',
     'happytrails',
     'iterm',
     'monstertruck',
     'neolexicographicordering',
-    'primedrive', 'plantina',
+    'primedrive', 'plantina', 'psenica',
+    'runningrace', 'reverse',
     'spanavac',
 }
 ignore_file_parts = [
@@ -137,6 +138,13 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
         return name_mapping[name], all_problems[name_mapping[name]][1], 'Solved' if all_problems[name_mapping[name]][
                                                                                         3] == 'Accepted' else 'Unsolved'
 
+    # Skip file if directory already matches a problem.
+    if directory_name is not None:
+        fixed_dir_name = directory_name.replace('-', '').replace('_', '').replace(' ', '').lower()
+        if fixed_dir_name in all_problems:
+            return text, -1, 'Ignored'
+
+    # Ignore files if they contain a substring that means they are unrelated to kattis.
     for part in ignore_file_parts:
         if part in name:
             return text, -1, 'Ignored'
