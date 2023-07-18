@@ -4,6 +4,8 @@
 /solutions
 /TestRunner/*.java
 /TestRunner/*.class
+/TestRunner/other_solution.py
+/TestRunner/input.txt
 already_downloaded.txt
 cookie.txt
 problem_cache.db

@@ -9,10 +9,11 @@ import os
 
 
 class Repo:
-    def __init__(self, name, branch="master", prefix=None, ignore_files=False):
+    def __init__(self, name, branch="master", prefix=None, ignore_files=False, hosting='github'):
         self.name = name
         self.branch = branch
         self.ignore_files = ignore_files
+        self.hosting = hosting
         self.path = "repos/" + name
         self.solutions = self.path + "/" + (prefix if prefix else "")
         self.solved = 0
@@ -25,6 +26,8 @@ class Repo:
 
 # https://github.com/truongcongthanh2000/TrainACM-ICPC-OLP
 repo_list = [
+    # Repo("Syuq/Kattis", hosting='gitlab'), # clone of mpfeifer1/Kattis
+
     Repo("abeaumont/competitive-programming", prefix='kattis'),
     Repo("aheschl1/Kattis-Solutions", branch='main'),
     Repo("aiviaghost/Kattis_solutions"),
@@ -79,7 +82,8 @@ def create_and_sync_repos():
         os.mkdir('repos')
     for rep in repo_list:
         if not os.path.exists(rep.path):
-            res = subprocess.run(['git', 'clone', f"git@github.com:{rep.name}.git", rep.path], capture_output=True)
+            git_command = f"git@github.com:{rep.name}.git" if rep.hosting == 'github' else f"https://gitlab.com/{rep.name}.git"
+            res = subprocess.run(['git', 'clone', git_command, rep.path], capture_output=True)
             if res.returncode != 0:
                 print("Error cloning " + rep.name)
                 print(res.stderr)
