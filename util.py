@@ -65,21 +65,23 @@ ignore_directories = {
 }
 ignore_files = {
     'authors', 'acc', 'answer',
-    'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute',
-    'comp', 'check', 'contest4solutions',
+    'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute', 'branches',
+    'comp', 'check', 'contest4solutions', 'c++', 'completed',
     'directoryreader', 'deque', 'djikstra',
-    'error',
+    'error', 'easy',
     'generatereadme',
-    'in', 'info',
-    'kattio',
-    'license',
-    'main', 'makefile', 'matrixmult',
+    'hooks', 'heads', 'hard',
+    'in', 'info', 'incomplete',
+    'java',
+    'kattio', 'kattis',
+    'license', 'logs',
+    'main', 'makefile', 'matrixmult', 'medium',
     'node',
-    'output', 'oops',
-    'pair','point2d',
-    'readmegenerator',
-    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions',
-    'testgen', 'test', 'template', 'testingtool', 'tle',
+    'output', 'oops', 'objects', 'origin',
+    'pair','point2d', 'pack', 'python',
+    'readmegenerator', 'refs', 'remotes',
+    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src',
+    'testgen', 'test', 'template', 'testingtool', 'tle', 'tags',
     'version',
     'wronganswer', 'why',
 
@@ -131,12 +133,19 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
     if name in all_problems:
         return name, all_problems[name][1], 'Solved' if all_problems[name][3] == 'Accepted' else 'Unsolved'
 
-    if name in ignore_files:
-        return text, -1, 'Ignored'
-
     if name in name_mapping:
         return name_mapping[name], all_problems[name_mapping[name]][1], 'Solved' if all_problems[name_mapping[name]][
                                                                                         3] == 'Accepted' else 'Unsolved'
+
+    # check if we can find a match by adding an s
+    if (m3 := name + 's') in all_problems:
+        return m3, all_problems[m3][1], 'Solved' if all_problems[m3][3] == 'Accepted' else 'Unsolved'
+    # check if we can find a match by removing an s
+    if name[-1] == 's' and (m3 := name[:-1]) in all_problems:
+        return m3, all_problems[m3][1], 'Solved' if all_problems[m3][3] == 'Accepted' else 'Unsolved'
+
+    if name in ignore_files:
+        return text, -1, 'Ignored'
 
     # Skip file if directory already matches a problem.
     if directory_name is not None:
