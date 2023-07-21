@@ -38,16 +38,25 @@ def get_all_from_query(query: str):
 
 @lru_cache(maxsize=1000)
 def get_all_unsolved() -> dict:
-    return {x[0]: x for x in get_all_from_query(
-        "SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
+    return {tt[0]: tt for tt in get_all_from_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
+
+
+part_removals = ['kattis_', 'katttis_', '-sm', '-node', '_', '(', ')', '-', ' ', "'", ',']
 
 
 @lru_cache(maxsize=1000)
 def get_all_problems() -> dict:
-    return {x[0]: x for x in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
+    res = {xx[0]: xx for xx in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
+    res2 = {}
+    for k, v in res.items():
+        name_match = v[2].lower()
+        for part in part_removals:
+            name_match = name_match.replace(part, '')
+        if name_match not in res:
+            res2[name_match] = v
+    return res | res2
 
 
-part_removals = ['kattis_', 'katttis_', '-sm', '-node', '_', '(', ')', '-', ' ']
 ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore',
                      'h', 'ipynb', 'lock', 'class']
 ignore_directories = {
@@ -71,16 +80,16 @@ ignore_files = {
     'error', 'easy',
     'generatereadme',
     'hooks', 'heads', 'hard',
-    'in', 'info', 'incomplete',
-    'java',
+    'in', 'info', 'incomplete', 'input',
+    'java', 'jbuild',
     'kattio', 'kattis',
     'license', 'logs',
     'main', 'makefile', 'matrixmult', 'medium',
     'node',
     'output', 'oops', 'objects', 'origin',
-    'pair','point2d', 'pack', 'python',
+    'pair', 'point2d', 'pack', 'python',
     'readmegenerator', 'refs', 'remotes',
-    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src',
+    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src', 'sol', 'solution',
     'testgen', 'test', 'template', 'testingtool', 'tle', 'tags',
     'version',
     'wronganswer', 'why',
@@ -105,6 +114,9 @@ ignore_file_parts = [
 
 name_mapping = wrong_to_right_map.name_mappings
 
+for x in get_all_problems():
+    name_mapping[x] = x
+
 
 def check_problem(text: str, directory_name=None) -> (str, float, str):
     if len(text) >= 38 or text.startswith('.') or (directory_name is not None and directory_name.startswith('.')):
@@ -117,41 +129,28 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
     for part in part_removals:
         parts = parts.replace(part, '')
     parts = parts.split('.')
-    name, ext = parts[0], parts[-1]
+    name, ext = name_mapping[parts[0]] if parts[0] in name_mapping else parts[0], parts[-1]
+
+    problems = get_all_problems()
+
+    if name in problems:
+        return problems[name][0], problems[name][1], 'Solved' if problems[name][3] == 'Accepted' else 'Unsolved'
 
     if len(name) < 3 or name.isdigit() or ext in ignore_extensions:
         return text, -1, 'Ignored'
 
-    all_problems = get_all_problems()
-    if name in all_problems:
-        return name, all_problems[name][1], 'Solved' if all_problems[name][3] == 'Accepted' else 'Unsolved'
-
+    # Try to remove digits and add / remove 's'
     m = re.match(r'(\d*\D+)\d*$', name)
     if m is not None:
-        name = m.group(1)
+        name = name_mapping[m.group(1)] if m.group(1) in name_mapping else m.group(1)
+    name = name_mapping[name[:-1]] if name[-1] == 's' and name[:-1] in name_mapping else name
+    name = name_mapping[name + 's'] if name + 's' in name_mapping else name
 
-    if name in all_problems:
-        return name, all_problems[name][1], 'Solved' if all_problems[name][3] == 'Accepted' else 'Unsolved'
-
-    if name in name_mapping:
-        return name_mapping[name], all_problems[name_mapping[name]][1], 'Solved' if all_problems[name_mapping[name]][
-                                                                                        3] == 'Accepted' else 'Unsolved'
-
-    # check if we can find a match by adding an s
-    if (m3 := name + 's') in all_problems:
-        return m3, all_problems[m3][1], 'Solved' if all_problems[m3][3] == 'Accepted' else 'Unsolved'
-    # check if we can find a match by removing an s
-    if name[-1] == 's' and (m3 := name[:-1]) in all_problems:
-        return m3, all_problems[m3][1], 'Solved' if all_problems[m3][3] == 'Accepted' else 'Unsolved'
+    if name in problems:
+        return problems[name][0], problems[name][1], 'Solved' if problems[name][3] == 'Accepted' else 'Unsolved'
 
     if name in ignore_files:
         return text, -1, 'Ignored'
-
-    # Skip file if directory already matches a problem.
-    if directory_name is not None:
-        fixed_dir_name = directory_name.replace('-', '').replace('_', '').replace(' ', '').lower()
-        if fixed_dir_name in all_problems:
-            return text, -1, 'Ignored'
 
     # Ignore files if they contain a substring that means they are unrelated to kattis.
     for part in ignore_file_parts:
