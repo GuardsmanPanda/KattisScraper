@@ -41,7 +41,7 @@ def get_all_unsolved() -> dict:
     return {tt[0]: tt for tt in get_all_from_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
 
 
-part_removals = ['kattis_', 'katttis_', '-sm', '-node', '_', '(', ')', '-', ' ', "'", ',']
+part_removals = ['kattis_', 'katttis_', '-sm', '-node'] + list("_()-,'?^ +&)!=#")
 
 
 @lru_cache(maxsize=1000)
@@ -76,7 +76,7 @@ ignore_files = {
     'authors', 'acc', 'answer',
     'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute', 'branches',
     'comp', 'check', 'contest4solutions', 'c++', 'completed',
-    'directoryreader', 'deque', 'djikstra',
+    'directoryreader', 'deque', 'djikstra', 'datetime',
     'error', 'easy',
     'generatereadme',
     'hooks', 'heads', 'hard',
@@ -86,11 +86,11 @@ ignore_files = {
     'license', 'logs',
     'main', 'makefile', 'matrixmult', 'medium',
     'node',
-    'output', 'oops', 'objects', 'origin',
+    'output', 'oops', 'objects', 'origin', 'openkattis',
     'pair', 'point2d', 'pack', 'python',
     'readmegenerator', 'refs', 'remotes',
     'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src', 'sol', 'solution',
-    'testgen', 'test', 'template', 'testingtool', 'tle', 'tags',
+    'testgen', 'test', 'template', 'testingtool', 'tle', 'tempcoderunnerfile', 'tags',
     'version',
     'wronganswer', 'why',
 

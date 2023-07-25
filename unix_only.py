@@ -32,6 +32,7 @@ repo_list = [
     Repo("abeaumont/competitive-programming", prefix='kattis'),
     Repo("aheschl1/Kattis-Solutions", branch='main'),
     Repo("aiviaghost/Kattis_solutions"),
+    Repo("Athaws/KattisSolutions", branch='main'),
     Repo("AugustDanell/Kattis-Assignments"),
     Repo("BC46/kattis-solutions", branch='main'),
     # Repo("bradendubois/competitive-programming", prefix='kattis'),
@@ -50,6 +51,7 @@ repo_list = [
     Repo("iandioch/solutions", prefix='kattis'),
     Repo("Ikerlb/kattis"),
     Repo("jerryxu20/kattis", branch='main'),
+    Repo("Jasonzhou97/Kattis-Solutions"),
     Repo("JonSteinn/Kattis-Solutions"),
     Repo("JordanHassy/Kattis", branch='main'),
     Repo("kailashgautham/Kattis", branch='main', prefix='completed'),
@@ -62,8 +64,9 @@ repo_list = [
     Repo("matthewReff/Kattis-Problems"),
     Repo("Mdan12/Kattis-solutions", branch='main'),
     Repo("meysamaghighi/Kattis"),
-    Repo("minidomo/Kattis"),
+    # Repo("minidomo/Kattis"),
     Repo("mpfeifer1/Kattis"),
+    Repo("patrick-may/kattis", branch='main'),
     Repo("PedroContipelli/Kattis"),
     Repo("prokarius/hello-world"),
     Repo("rishabhgoel0213/KattisSolutions", branch='main'),
@@ -73,6 +76,7 @@ repo_list = [
     Repo("rvrheenen/OpenKattis"),
     Repo("shakeelsamsu/kattis"),
     Repo("Skantz/Puzzles", prefix='kattis'),
+    Repo("ssmall90/Open-Kattis"),
     Repo("SurgicalSteel/Competitive-Programming", prefix='Kattis-Solutions'),
     Repo("versenyi98/kattis-solutions", branch='main', prefix='solutions'),
     Repo("Wabri/SomeKattisProblem"),
@@ -125,7 +129,10 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
         repo.unsolved += 1
         local_location = f"repos/{repo.name}{('/' + '/'.join(path)) if path[0] != '' else ''}/"
         if file is None:
-            file_size = os.path.getsize(local_location + os.listdir(local_location)[0])
+            file_size = 0
+            for ff in os.listdir(local_location):
+                if os.path.isfile(local_location + ff):
+                    file_size = max(file_size, os.path.getsize(local_location + ff))
             unsolved.append([canonical, points, f'-{file_size}', f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}"])
         else:
             file_size = os.path.getsize(local_location + file)
