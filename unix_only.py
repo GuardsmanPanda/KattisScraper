@@ -1,5 +1,4 @@
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from tabulate import tabulate
 import kattis_sync
 import subprocess
@@ -32,6 +31,7 @@ repo_list = [
     Repo("abeaumont/competitive-programming", prefix='kattis'),
     Repo("aheschl1/Kattis-Solutions", branch='main'),
     Repo("aiviaghost/Kattis_solutions"),
+    Repo("AliMuhammadAsad/Kattis-Solutions", branch='main'),
     Repo("Athaws/KattisSolutions", branch='main'),
     Repo("AugustDanell/Kattis-Assignments"),
     Repo("BC46/kattis-solutions", branch='main'),
@@ -53,10 +53,12 @@ repo_list = [
     Repo("jerryxu20/kattis", branch='main'),
     Repo("Jasonzhou97/Kattis-Solutions"),
     Repo("JonSteinn/Kattis-Solutions"),
+    Repo("JaydenPahukula/competitive-coding", branch='main', prefix='Kattis'),
     Repo("JordanHassy/Kattis", branch='main'),
     Repo("kailashgautham/Kattis", branch='main', prefix='completed'),
     Repo("kantuni/Kattis"),
     Repo("KentGrigo/Kattis", branch='main'),
+    Repo("kumarchak30/Kattis-solutions", branch='main'),
     Repo("leslieyip02/kattis"),
     Repo("LoiNguyennn/CompetitiveProgramming4_Solutions", branch='main', prefix="Kattis_OJ"),
     # Repo("lisansulistiani/Kattis", branch='main'),

@@ -44,8 +44,8 @@ def get_all_unsolved() -> dict:
 part_removals = ['kattis_', 'katttis_', '-sm', '-node'] + list("_()-,'?^ +&)!=#")
 
 
-@lru_cache(maxsize=1000)
-def get_all_problems() -> dict:
+@lru_cache(maxsize=1)
+def get_all_problems(version=0) -> dict:
     res = {xx[0]: xx for xx in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
     res2 = {}
     for k, v in res.items():
@@ -68,8 +68,8 @@ ignore_directories = {
     'origin',
     'pack', 'PO-Kattis',
     'repo-scripts',
-    'scripts',
-    'templates', 'template', 'test', 'todo', 'tests',
+    'scripts', 'Samples',
+    'templates', 'template', 'test', 'todo', 'tests', 'TLE',
     'verbose',
 }
 ignore_files = {
@@ -97,7 +97,7 @@ ignore_files = {
     # Old problems?
     'androids', 'alphabetical',
     'casual', 'cesta',
-    'duplicates',
+    'duplicates', 'dice',
     'happytrails',
     'iterm',
     'monstertruck',
@@ -109,6 +109,7 @@ ignore_files = {
 ignore_file_parts = [
     'noi2020', 'neo-',
     'scl2022', 'scl2021',
+    'testcasegenerator',
     'vjudge',
 ]
 
@@ -131,7 +132,7 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
     parts = parts.split('.')
     name, ext = name_mapping[parts[0]] if parts[0] in name_mapping else parts[0], parts[-1]
 
-    problems = get_all_problems()
+    problems = get_all_problems(version=1)
 
     if name in problems:
         return problems[name][0], problems[name][1], 'Solved' if problems[name][3] == 'Accepted' else 'Unsolved'
