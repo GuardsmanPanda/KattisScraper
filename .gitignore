@@ -5,8 +5,9 @@
 /TestRunner/*.java
 /TestRunner/*.class
 /TestRunner/*.o
+/TestRunner/*.go
+/TestRunner/*.cpp
 /TestRunner/other_solution.py
-/TestRunner/other_solution.cpp
 /TestRunner/input.txt
 already_downloaded.txt
 cookie.txt

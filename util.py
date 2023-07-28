@@ -44,7 +44,7 @@ def get_all_unsolved() -> dict:
 part_removals = ['kattis_', 'katttis_', '-sm', '-node'] + list("_()-,'?^ +&)!=#")
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=10)
 def get_all_problems(version=0) -> dict:
     res = {xx[0]: xx for xx in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
     res2 = {}
@@ -61,6 +61,7 @@ ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod'
                      'h', 'ipynb', 'lock', 'class']
 ignore_directories = {
     '_meta',
+    'CTFs',
     'heads', 'hooks',
     'info', 'incomplete', 'ICPC_2019',
     'KattisRSSParser', 'KattisRSSNotifier',
@@ -104,7 +105,6 @@ ignore_files = {
     'neolexicographicordering',
     'primedrive', 'plantina', 'psenica',
     'runningrace', 'reverse',
-    'spanavac',
 }
 ignore_file_parts = [
     'noi2020', 'neo-',

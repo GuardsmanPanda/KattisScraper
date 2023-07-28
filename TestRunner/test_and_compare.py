@@ -7,53 +7,48 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        f.write(f"8\n")
-        f.write(f"{randint(1, 10)} 2 1 2\n")
-        f.write(f"{randint(1, 10)} 0\n")
-        f.write(f"{randint(1, 10)} 0\n")
-        f.write(f"{randint(1, 10)}0 1 6\n")
-        f.write(f"{randint(1, 10)}0 1 3\n")
-        f.write(f"{randint(1, 10)} 2 0 4\n")
-        f.write(f"{randint(1, 10)} 1 7\n")
-        f.write(f"{randint(1, 10)} 0\n")
+        f.write(f"5\n")
+        for _ in range(5):
+            if randint(0, 1) == 0:
+                f.write(f"1 {randint(1, 10)}\n")
+            else:
+                f.write(f"2 {randint(1, 10)} {randint(1, 10)}\n")
 
 
-def run_python_and_capture_output(name):
-    result = subprocess.run(['python3', name + ".py"], input=open('input.txt', 'rb').read(), capture_output=True)
+def run_result(command):
+    result = subprocess.run(command, input=open('input.txt', 'rb').read(), capture_output=True, shell=True)
     if result.returncode != 0:
         raise Exception(result.stderr.decode('utf-8'))
     return result.stdout.decode('utf-8').strip()
 
 
-def run_java_and_capture_output(name):
+def run_python(name):
+    return run_result([f'python3 {name}.py'])
+
+
+def run_go(name):
+    return run_result([f'go run {name}.go'])
+
+
+def run_java(name):
     if name not in compiled:
-        result = subprocess.run(['javac', name + '.java'], capture_output=True)
-        if result.returncode != 0:
-            raise Exception(result.stderr.decode('utf-8'))
+        run_result(['javac', name + '.java'])
         compiled.add(name)
-    result = subprocess.run(['java', name], input=open('input.txt', 'rb').read(), capture_output=True)
-    if result.returncode != 0:
-        raise Exception(result.stderr.decode('utf-8'))
-    return result.stdout.decode('utf-8').strip()
+    return run_result(['java', name])
 
 
-def run_cpp_and_capture_output(name):
+def run_cpp(name):
     if name not in compiled:
-        result = subprocess.run(['g++', name + '.cpp', '-o', name + ".o"], capture_output=True)
-        if result.returncode != 0:
-            raise Exception(result.stderr.decode('utf-8'))
+        run_result(['g++', name + '.cpp', '-o', name + ".o"])
         compiled.add(name)
-    result = subprocess.run(['./' + name + ".o"], input=open('input.txt', 'rb').read(), capture_output=True)
-    if result.returncode != 0:
-        raise Exception(result.stderr.decode('utf-8'))
-    return result.stdout.decode('utf-8').strip()
+    return run_result(['./' + name + ".o"])
 
 
 def main():
     for _ in range(100):
         generate_data()
-        result_other = run_cpp_and_capture_output('other_solution')
-        result_me = run_java_and_capture_output('citrusintern')
+        result_other = run_python('other_solution')
+        result_me = run_go('my_solution')
         if result_me == result_other:
             print('OK')
         else:
