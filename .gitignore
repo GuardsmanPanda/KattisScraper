@@ -8,6 +8,7 @@
 /TestRunner/*.go
 /TestRunner/*.cpp
 /TestRunner/other_solution.py
+/TestRunner/my_solution.py
 /TestRunner/input.txt
 already_downloaded.txt
 cookie.txt
