@@ -60,14 +60,9 @@ def get_all_problems(version=0) -> dict:
 ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore',
                      'h', 'ipynb', 'lock', 'class', 'xml', 'ans']
 ignore_directories = {
-    '_meta',
-    'CTFs',
-    'heads', 'hooks',
-    'info', 'incomplete', 'ICPC_2019',
+    'CTFs', 'incomplete', 'ICPC_2019',
     'KattisRSSParser', 'KattisRSSNotifier',
-    'logs',
-    'origin',
-    'pack', 'PO-Kattis',
+    'PO-Kattis',
     'repo-scripts',
     'scripts', 'Samples',
     'templates', 'template', 'test', 'todo', 'tests', 'TLE',
@@ -80,18 +75,18 @@ ignore_files = {
     'directoryreader', 'deque', 'djikstra', 'datetime',
     'error', 'easy',
     'generatereadme',
-    'hooks', 'heads', 'hard',
+    'hard',
     'in', 'info', 'incomplete', 'input',
     'java', 'jbuild',
     'kattio', 'kattis',
-    'license', 'logs',
+    'license',
     'main', 'makefile', 'matrixmult', 'medium',
     'node',
-    'output', 'oops', 'objects', 'origin', 'openkattis',
-    'pair', 'point2d', 'pack', 'python',
-    'readmegenerator', 'refs', 'remotes',
+    'output', 'oops', 'openkattis',
+    'pair', 'point2d', 'python',
+    'readmegenerator',
     'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src', 'sol', 'solution',
-    'testgen', 'test', 'template', 'testingtool', 'tle', 'tempcoderunnerfile', 'tags',
+    'testgen', 'test', 'template', 'testingtool', 'tle', 'tempcoderunnerfile',
     'version',
     'wronganswer', 'why',
 
@@ -106,12 +101,6 @@ ignore_files = {
     'primedrive', 'plantina', 'psenica',
     'runningrace', 'reverse',
 }
-ignore_file_parts = [
-    'noi2020', 'neo-',
-    'scl2022', 'scl2021',
-    'testcasegenerator',
-    'vjudge',
-]
 
 name_mapping = wrong_to_right_map.name_mappings
 
@@ -120,7 +109,7 @@ for x in get_all_problems():
 
 
 def check_problem(text: str, directory_name=None) -> (str, float, str):
-    if len(text) >= 38 or text.startswith('.') or (directory_name is not None and directory_name.startswith('.')):
+    if len(text) >= 60:
         return text, -1, 'Ignored'
 
     if directory_name is not None and directory_name in ignore_directories:
@@ -152,10 +141,5 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
 
     if name in ignore_files:
         return text, -1, 'Ignored'
-
-    # Ignore files if they contain a substring that means they are unrelated to kattis.
-    for part in ignore_file_parts:
-        if part in name:
-            return text, -1, 'Ignored'
 
     return name, -1, 'Unknown' if directory_name is not None else 'Ignored'
