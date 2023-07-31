@@ -17,6 +17,9 @@ repo_ignore = {
     'bibookss/cp-book-kattis-problems',
     'TUHHStartupEngineers-Classroom/ss23-bdsb-PriyankaKattishetti',
     'jaARke/LeetCode',
+    'Rikveet/Programing_Problems_Manager ',
+    'MrStarman18/CompetitionProgramming  ',
+    'vader-coder/Kattis   ',
 
 
     # Too few solutions
@@ -39,7 +42,7 @@ def main():
         resp = requests.get(f"https://api.github.com/search/repositories?q=kattis&page={i}&per_page=100&sort=updated")
         if 'items' not in resp.json():
             print(resp.json())
-            assert False, 'No items in response'
+            continue
         for x in resp.json()['items']:
             if include_repo(x['full_name']) and x['size'] > 10:
                 repos.append((x['full_name'], x['size']))
