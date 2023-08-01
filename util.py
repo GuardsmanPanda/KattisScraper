@@ -57,8 +57,11 @@ def get_all_problems(version=0) -> dict:
     return res | res2
 
 
-ignore_extensions = ['md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore',
-                     'h', 'ipynb', 'lock', 'class', 'xml', 'ans']
+ignore_extensions = [
+    'md', 'out', 'in', 'txt', 'jpg', 'json', 'ans',
+    'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore',
+    'h', 'ipynb', 'lock', 'class', 'xml', 'ans', 'pde'
+]
 ignore_directories = {
     'CTFs', 'incomplete', 'ICPC_2019',
     'KattisRSSParser', 'KattisRSSNotifier',
@@ -71,7 +74,7 @@ ignore_directories = {
 ignore_files = {
     'authors', 'acc', 'answer',
     'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute', 'branches',
-    'comp', 'check', 'contest4solutions', 'c++', 'completed',
+    'comp', 'check', 'contest4solutions', 'c++', 'completed', 'commentsoncs',
     'directoryreader', 'deque', 'djikstra', 'datetime',
     'error', 'easy',
     'generatereadme',
@@ -85,8 +88,8 @@ ignore_files = {
     'output', 'oops', 'openkattis',
     'pair', 'point2d', 'python',
     'readmegenerator',
-    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src', 'sol', 'solution',
-    'testgen', 'test', 'template', 'testingtool', 'tle', 'tempcoderunnerfile',
+    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src', 'sol', 'solution', 'script',
+    'testgen', 'test', 'template', 'testingtool', 'tle', 'tempcoderunnerfile', 'tester',
     'version',
     'wronganswer', 'why',
 

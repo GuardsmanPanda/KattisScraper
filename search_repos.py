@@ -17,9 +17,13 @@ repo_ignore = {
     'bibookss/cp-book-kattis-problems',
     'TUHHStartupEngineers-Classroom/ss23-bdsb-PriyankaKattishetti',
     'jaARke/LeetCode',
-    'Rikveet/Programing_Problems_Manager ',
-    'MrStarman18/CompetitionProgramming  ',
-    'vader-coder/Kattis   ',
+    'Rikveet/Programing_Problems_Manager',
+    'MrStarman18/CompetitionProgramming',
+    'vader-coder/Kattis',
+    'kattisA/kattisa.github.io',
+    'ishandutta2007/chatgpt-competitive-programming-extension',
+    'jmerle/competitive-companion',
+    'NoelEmaas/kattest',
 
 
     # Too few solutions

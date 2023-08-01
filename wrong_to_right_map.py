@@ -16,6 +16,7 @@ name_mappings = {
 
     'printer': '3dprinter',
     'threedprintedstatues': '3dprinter',
+    '3dprinting': '3dprinter',
 
     'fourthought': '4thought',
 
@@ -33,6 +34,7 @@ name_mappings = {
     'absurdistan': 'absurdistan2',
     'absurdistanroads': 'absurdistan3',
     'acmscoring': 'acm',
+    'acmscoringcontest': 'acm',
     'calculusofada': 'ada',
     'addemupvariations': 'addemup',
     'addwords': 'addingwords',
@@ -264,6 +266,7 @@ name_mappings = {
     'mrcodegrader': 'mrcodeformatgrader',
     'mubuda': 'mububa',
 
+    'narrowartgallary': 'narrowartgallery',
     'nasty': 'nastyhacks',
     'ihatethenumber': 'nine',
     'ihatenine': 'nine',
@@ -295,6 +298,7 @@ name_mappings = {
     'polynomialmultiplication': 'polymul1',
     'polymul': 'polymul1',
     'popcorn': 'popkorn',
+    'powermodulus': 'powers',
     'powersoftwoeasy': 'powersof2easy',
     'goodcuberoot': 'prettygoodcuberoot',
     'primalrep': 'primalrepresentation',
@@ -345,11 +349,13 @@ name_mappings = {
     'snapper': 'snappereasy',
     'snapperchain': 'snappereasy',
     'sodasurpler': 'sodaslurper',
+    'sodaslurpe': 'sodaslurper',
     'spanavac': 'spavanac',
     'spidermanworkout': 'spiderman',
     'squarefields': 'squarefieldseasy',
     'squarepegroundhole': 'squarepegs',
     'sredjni': 'srednji',
+    'stararrengements': 'stararrangements',
     'stirlingsaprox': 'stirlingsapproximation',
     'messy': 'stokigalistor',
     'streamingstats': 'streamstats',
@@ -371,6 +377,7 @@ name_mappings = {
     'backslashproblem': 'thebackslashproblem',
     'kingofthenorth': 'thekingofthenorth',
     'sockpile': 'thesockpile',
+    'thinkingofnum': 'thinkingofanumber',
     'thisaintyourgrandpas': 'thisaintyourgrandpascheckerboard',
     'tolfur': 'toflur',
     'touchscreen': 'touchscreenkeyboard',
@@ -380,6 +387,7 @@ name_mappings = {
     'sierpinskicircumference': 'triangle',
     'odometer': 'tripodometer',
     'tourdesalesforce': 'toursdesalesforce',
+    'twentyfourtyeight': 'twentyfour',
     'twocharts': 'twochartsbecomeone',
 
     'undeadalive': 'undeadoralive',
