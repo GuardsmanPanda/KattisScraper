@@ -1,3 +1,5 @@
+#! ./venv/bin/python3
+
 from datetime import datetime
 from tabulate import tabulate
 import kattis_sync
