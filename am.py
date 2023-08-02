@@ -8,8 +8,8 @@ md = defaultdict(list)
 for key, val in mapping.items():
     md[val[0]].append((key, val))
 
-wrong = input('Wrong Problem ID: ')
-right = input('Right Problem ID: ')
+wrong = input('Wrong Problem ID: ').strip()
+right = input('Right Problem ID: ').strip()
 md[wrong[0]].append((wrong, right))
 
 with open('wrong_to_right_map.py', 'w') as f:

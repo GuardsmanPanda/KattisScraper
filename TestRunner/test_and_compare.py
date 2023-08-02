@@ -1,4 +1,5 @@
-from random import randint, shuffle
+import string
+from random import randint, shuffle, choice
 import subprocess
 
 compiled = set()
@@ -8,7 +9,9 @@ def generate_data():
     """Generate test data and write it to data.txt"""
     x, y = randint(1, 10), randint(2, 10)
     with open('input.txt', 'w') as f:
-        f.write(f"{randint(1, 10**9)}\n")
+        f.write(''.join(choice('abc') for _ in range(6)))
+        f.write('\n')
+
 
 def run_result(command):
     result = subprocess.run(command, input=open('input.txt', 'rb').read(), capture_output=True, shell=True)
@@ -42,8 +45,8 @@ def run_cpp(name):
 def main():
     for _ in range(1000):
         generate_data()
-        result_other = run_python('other_solution')
-        result_me = run_java('binarychoosing')
+        result_other = run_cpp('other_solution')
+        result_me = run_java('stringfactoring')
         if result_me == result_other:
             print('OK')
         else:
