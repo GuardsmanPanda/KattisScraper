@@ -89,9 +89,10 @@ ignore_files = {
     'pair', 'point2d', 'python',
     'readmegenerator',
     'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src', 'sol', 'solution', 'script',
+    'setupcpp', 'setuppython'
     'testgen', 'test', 'template', 'testingtool', 'tle', 'tempcoderunnerfile', 'tester',
     'version',
-    'wronganswer', 'why',
+    'wronganswer', 'why', 'wcfd',
 
     # Old problems?
     'androids', 'alphabetical',

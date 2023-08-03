@@ -90,6 +90,7 @@ repo_list = [
     Repo("olasundell/kattis", prefix='src/main'),
     Repo("PedroContipelli/Kattis"),
     Repo("prokarius/hello-world"),
+    Repo("ricardo0129/KattisSolutions"),
     Repo("rishabhgoel0213/KattisSolutions"),
     Repo("RJTomk/Kattis", ignore_files=True),
     Repo("robertusbagaskara/kattis-solutions"),
@@ -171,8 +172,8 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
 
 
 path_ignore =[
-    '/.', '/_', '@todo', '/venv', '/Practice', '/debug',
-    'codingame', 'hackerrank', 'vjudge', 'leetcode',
+    '/.', '/_', '@todo', '/venv', '/Practice', '/debug', '/DataStructures',
+    'codingame', 'hackerrank', 'vjudge', 'leetcode', 'adventofcode',
     'cmake-build-debug',
     'scl2022', 'noi_2020', 'scl2021',
 ]
