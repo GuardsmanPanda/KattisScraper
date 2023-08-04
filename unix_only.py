@@ -10,10 +10,10 @@ import os
 
 
 class Repo:
-    def __init__(self, name, prefix=None, ignore_files=False):
+    def __init__(self, name, prefix=None, ignore_files=False, path='repos'):
         self.name = name
         self.ignore_files = ignore_files
-        self.path = "repos/" + name
+        self.path = path + "/" + name
         self.solutions = self.path + "/" + (prefix if prefix else "")
         self.solved = 0
         self.unsolved = 0
@@ -36,6 +36,7 @@ repo_list = [
     Repo("arsdorintbp2003/KattisPractice"),
     Repo("Athaws/KattisSolutions"),
     Repo("AugustDanell/Kattis-Assignments"),
+    Repo("ayoubc/competitive-programming", prefix='online_judges/kattis'),
     Repo("BC46/kattis-solutions"),
     Repo("BooleanCube/cp", prefix='kattis'),
     # Repo("bradendubois/competitive-programming", prefix='kattis'),
@@ -58,11 +59,12 @@ repo_list = [
     Repo("iandioch/solutions", prefix='kattis'),
     Repo("Ikerlb/kattis"),
     Repo("jakobkhansen/KattisSolutions"),
+    Repo("jasonincanada/kattis"),
     Repo("Jasonzhou97/Kattis-Solutions"),
-    Repo("jerryxu20/kattis"),
-    Repo("JonSteinn/Kattis-Solutions"),
     Repo("JaydenPahukula/competitive-coding", prefix='Kattis'),
+    Repo("jerryxu20/kattis"),
     Repo("JKeane4210/KattisProblems"),
+    Repo("JonSteinn/Kattis-Solutions"),
     Repo("JordanHassy/Kattis"),
     Repo("kailashgautham/Kattis", prefix='completed'),
     # Repo("kantuni/Kattis"),
@@ -83,6 +85,7 @@ repo_list = [
     # Repo("minidomo/Kattis"),
     Repo("mpfeifer1/Kattis"),
     Repo("mwebber3/CodingChallengeSites", prefix='Kattis'),
+    Repo("NikitaSandstrom/Kattis-Solutions"),
     Repo("patrick-may/kattis"),
     Repo("olasundell/kattis", prefix='src/main'),
     Repo("PedroContipelli/Kattis"),
@@ -100,44 +103,42 @@ repo_list = [
     Repo("Thomas-McKanna/Kattis"),
     Repo("versenyi98/kattis-solutions", prefix='solutions'),
     Repo("Wabri/SomeKattisProblem"),
+    Repo("zhuodannychen/Competitive-Programming", prefix='Kattis'),
     Repo("Zyzzava/kattis"),
     # Repo("xCiaraG/Kattis"),
     Repo("BrandonTang89/Competitive_Programming_4_Solutions"),
 ]
 
 
-def create_and_sync_repos():
-    print("--------------------- Cloning & Syncing Git Repos ------------------------")
-    if not os.path.exists('repos'):
-        os.mkdir('repos')
-    for rep in repo_list:
-        if not os.path.exists(rep.path):
-            res = subprocess.run(['git', 'clone', f"git@github.com:{rep.name}.git", rep.path], capture_output=True)
-            if res.returncode != 0:
-                print("Error cloning " + rep.name)
-                print(res.stderr)
-            else:
-                print("Successfully cloned " + rep.name)
+def create_and_sync_repo(rep: Repo):
+    if not os.path.exists(rep.path):
+        res = subprocess.run(['git', 'clone', f"git@github.com:{rep.name}.git", rep.path], capture_output=True)
+        if res.returncode != 0:
+            print("Error cloning " + rep.name)
+            print(res.stderr)
         else:
-            res = subprocess.Popen(['git', 'pull'], cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            res.wait()
-            if res.returncode == 0:
-                lines = res.stdout.readlines()
-                if len(lines) > 1:
-                    print("Updated " + rep.name)
-                    for line in lines:
-                        print('  ', line.decode('utf-8').strip('\n'))
-            else:
-                print("ERROR UPDATING: " + rep.name)
-                print(res.stderr.readlines())
+            print("Successfully cloned " + rep.name)
+    else:
+        res = subprocess.Popen(['git', 'pull'], cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        res.wait()
+        if res.returncode == 0:
+            lines = res.stdout.readlines()
+            if len(lines) > 1:
+                print("Updated " + rep.name)
+                for line in lines:
+                    print('  ', line.decode('utf-8').strip('\n'))
+        else:
+            print("ERROR UPDATING: " + rep.name)
+            print(res.stderr.readlines())
 
-        res = subprocess.Popen(['git', '--no-pager', 'log', '-1', '--format="%ai"'], cwd=rep.path,
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        time = res.stdout.readlines()[0].decode('utf-8').strip('\n')
-        rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').replace(tzinfo=None)
+    res = subprocess.Popen(['git', '--no-pager', 'log', '-1', '--format="%ai"'], cwd=rep.path,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    time = res.stdout.readlines()[0].decode('utf-8').strip('\n')
+    rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').replace(tzinfo=None)
 
-        res = subprocess.Popen(['git', 'branch', '--show-current'], cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        rep.branch = res.stdout.readlines()[0].decode('utf-8').strip('\n')
+    res = subprocess.Popen(['git', 'branch', '--show-current'], cwd=rep.path, stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+    rep.branch = res.stdout.readlines()[0].decode('utf-8').strip('\n')
 
 
 def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, file=None, dir_result=None, full_path=None):
@@ -150,7 +151,7 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
     elif result == 'Unsolved':
         repo.points_missing += points
         repo.unsolved += 1
-        local_location = f"repos/{repo.name}{('/' + '/'.join(path)) if path[0] != '' else ''}/"
+        local_location = f"{repo.path}{('/' + '/'.join(path)) if path[0] != '' else ''}/"
         if file is None:
             file_size = 0
             for ff in os.listdir(local_location):
@@ -173,35 +174,37 @@ path_ignore = [
     'cmake-build-debug',
     'scl2022', 'noi_2020', 'scl2021',
     '/MatthewFreestone/Kattis/DataStructures',
+    '/jasonincanada/kattis/cs/semirings',
 ]
 
 
-def find_unsolved_problems():
-    for repo in repo_list:
-        unsolved = []
-        seen = set()
-        for x in os.walk(repo.solutions):
-            if any(ignore in x[0] for ignore in path_ignore):
+def find_unsolved_problems(repo: Repo):
+    unsolved = []
+    seen = set()
+    for x in os.walk(repo.solutions):
+        if any(ignore in x[0] for ignore in path_ignore):
+            continue
+        waste, github_user, repo_name, *rest = x[0].split("/")
+        dir_canonical, dir_points, dir_result = util.check_problem(rest[-1].lower())
+        handle_repo_solution(dir_canonical, dir_points, dir_result, repo, rest, seen, unsolved, full_path=x[0])
+        if repo.ignore_files:
+            continue
+        for file in x[2]:
+            if any(ignore in file.lower() for ignore in path_ignore):
                 continue
-            waste, github_user, repo_name, *rest = x[0].split("/")
-            dir_canonical, dir_points, dir_result = util.check_problem(rest[-1].lower())
-            handle_repo_solution(dir_canonical, dir_points, dir_result, repo, rest, seen, unsolved, full_path=x[0])
-            if repo.ignore_files:
-                continue
-            for file in x[2]:
-                if any(ignore in file.lower() for ignore in path_ignore):
-                    continue
-                canonical, points, result = util.check_problem(file.lower(), rest[-1])
-                handle_repo_solution(canonical, points, result, repo, rest, seen, unsolved, file=file, dir_result=dir_result, full_path=x[0])
-        if len(unsolved) > 0:
-            print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
-            print("🔱 Unsolved Problems In " + repo.name)
-            print(tabulate(sorted(unsolved), headers=["Problem ID", "Points", "Size", "Link"], tablefmt='outline', floatfmt='0.1f'))
+            canonical, points, result = util.check_problem(file.lower(), rest[-1])
+            handle_repo_solution(canonical, points, result, repo, rest, seen, unsolved, file=file,
+                                 dir_result=dir_result, full_path=x[0])
+    if len(unsolved) > 0:
+        print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
+        print("🔱 Unsolved Problems In " + repo.name)
+        print(tabulate(sorted(unsolved), headers=["Problem ID", "Points", "Size", "Link"], tablefmt='outline', floatfmt='0.1f'))
 
 
 def print_repo_stats():
+    for repo in repo_list:
+        find_unsolved_problems(repo)
     solved, unsolved, unknown = 0, 0, 0
-    find_unsolved_problems()
     rows = []
     for repo in sorted(repo_list, key=lambda xx: xx.points_missing):
         solved += repo.solved
@@ -230,7 +233,12 @@ def print_repo_stats():
 def main():
     args = sys.argv[1:]
     if '--skip' not in args:
-        create_and_sync_repos()
+        print("--------------------- Cloning & Syncing Git Repos ------------------------")
+        if not os.path.exists('repos'):
+            os.mkdir('repos')
+        for repo in repo_list:
+            create_and_sync_repo(repo)
+
     if '--scrape' in args:
         kattis_sync.update_solution_cache()
         # kattis_sync.update_problem_created_at()
