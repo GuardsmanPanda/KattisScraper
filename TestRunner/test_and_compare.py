@@ -1,4 +1,3 @@
-import string
 from random import randint, shuffle, choice
 import subprocess
 
@@ -7,10 +6,10 @@ compiled = set()
 
 def generate_data():
     """Generate test data and write it to data.txt"""
-    x, y = randint(1, 10), randint(2, 10)
+    x = randint(1, 10)
+    m, k = randint(1, 6), randint(1, x)
     with open('input.txt', 'w') as f:
-        f.write(''.join(choice('abc') for _ in range(6)))
-        f.write('\n')
+        f.write("".join(choice('ort') for _ in range(12)) + '\n')
 
 
 def run_result(command):
@@ -43,10 +42,10 @@ def run_cpp(name):
 
 
 def main():
-    for _ in range(1000):
+    for _ in range(100):
         generate_data()
-        result_other = run_cpp('other_solution')
-        result_me = run_java('stringfactoring')
+        result_other = run_python('other_solution')
+        result_me = run_java('speakingofwhich')
         if result_me == result_other:
             print('OK')
         else:

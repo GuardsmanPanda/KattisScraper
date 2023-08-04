@@ -10,10 +10,9 @@ import os
 
 
 class Repo:
-    def __init__(self, name, prefix=None, ignore_files=False, hosting='github'):
+    def __init__(self, name, prefix=None, ignore_files=False):
         self.name = name
         self.ignore_files = ignore_files
-        self.hosting = hosting
         self.path = "repos/" + name
         self.solutions = self.path + "/" + (prefix if prefix else "")
         self.solved = 0
@@ -28,8 +27,6 @@ class Repo:
 
 # https://github.com/truongcongthanh2000/TrainACM-ICPC-OLP
 repo_list = [
-    # Repo("Syuq/Kattis", hosting='gitlab'), # clone of mpfeifer1/Kattis
-
     Repo("abeaumont/competitive-programming", prefix='kattis'),
     Repo("aheschl1/Kattis-Solutions"),
     Repo("aiviaghost/Kattis_solutions"),
@@ -70,7 +67,7 @@ repo_list = [
     Repo("kailashgautham/Kattis", prefix='completed'),
     # Repo("kantuni/Kattis"),
     # Repo("KentGrigo/Kattis"),
-    Repo("KiranKaravaev/kattis"),
+    # Repo("KiranKaravaev/kattis"),
     Repo("kristiansordal/kattis"),
     Repo("kumarchak30/Kattis-solutions"),
     Repo("leslieyip02/kattis"),
@@ -115,8 +112,7 @@ def create_and_sync_repos():
         os.mkdir('repos')
     for rep in repo_list:
         if not os.path.exists(rep.path):
-            git_command = f"git@github.com:{rep.name}.git" if rep.hosting == 'github' else f"https://gitlab.com/{rep.name}.git"
-            res = subprocess.run(['git', 'clone', git_command, rep.path], capture_output=True)
+            res = subprocess.run(['git', 'clone', f"git@github.com:{rep.name}.git", rep.path], capture_output=True)
             if res.returncode != 0:
                 print("Error cloning " + rep.name)
                 print(res.stderr)
@@ -140,7 +136,7 @@ def create_and_sync_repos():
         time = res.stdout.readlines()[0].decode('utf-8').strip('\n')
         rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').replace(tzinfo=None)
 
-        res = subprocess.Popen(['git', 'branch', '--show-current'], cwd=rep.path,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        res = subprocess.Popen(['git', 'branch', '--show-current'], cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         rep.branch = res.stdout.readlines()[0].decode('utf-8').strip('\n')
 
 
@@ -171,11 +167,12 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
     #     print("ERROR: ",(canonical, file, path[-1]))
 
 
-path_ignore =[
-    '/.', '/_', '@todo', '/venv', '/Practice', '/debug', '/DataStructures',
+path_ignore = [
+    '/.', '/_', '@todo', '/venv', '/Practice', '/debug', '/dist-newstyle/',
     'codingame', 'hackerrank', 'vjudge', 'leetcode', 'adventofcode',
     'cmake-build-debug',
     'scl2022', 'noi_2020', 'scl2021',
+    '/MatthewFreestone/Kattis/DataStructures',
 ]
 
 
@@ -216,7 +213,13 @@ def print_repo_stats():
             print('', repo.name)
             print("  Unknown: ")
             for x in sorted(repo.unknownFiles):
-                print(x)
+                path = ''
+                for xx in x[2].split('/'):
+                    if util.check_problem(xx.lower())[1] != -1:
+                        path += '/**' + xx + "**"
+                    else:
+                        path += '/' + xx
+                print(f"'{x[0]}'", f"'{x[1]}' ->", path)
     print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
     print(
         tabulate(rows, headers=["Repository Name", "Solved", "Points", "Unsolved", "Points", "Last Commit", "Unknown"], tablefmt='outline'))

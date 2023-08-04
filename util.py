@@ -1,4 +1,6 @@
 from functools import lru_cache
+
+import util_ignore_files
 import wrong_to_right_map
 import sqlite3
 import os
@@ -71,41 +73,7 @@ ignore_directories = {
     'templates', 'template', 'test', 'todo', 'tests', 'TLE',
     'verbose',
 }
-ignore_files = {
-    'authors', 'acc', 'answer',
-    'build', 'buildwiki', 'breadthfirstsearch', 'bnnaccuracy', 'brutebrute', 'branches',
-    'comp', 'check', 'contest4solutions', 'c++', 'completed', 'commentsoncs',
-    'directoryreader', 'deque', 'djikstra', 'datetime',
-    'error', 'easy',
-    'generatereadme',
-    'hard',
-    'in', 'info', 'incomplete', 'input',
-    'java', 'jbuild',
-    'kattio', 'kattis',
-    'license',
-    'main', 'makefile', 'matrixmult', 'medium',
-    'node',
-    'output', 'oops', 'openkattis',
-    'pair', 'point2d', 'python',
-    'readmegenerator',
-    'scrapper', 'sticky', 'secret', 'stringhashing', 'solutions', 'src', 'sol', 'solution', 'script',
-    'setupcpp', 'setuppython'
-    'testgen', 'test', 'template', 'testingtool', 'tle', 'tempcoderunnerfile', 'tester',
-    'version',
-    'wronganswer', 'why', 'wcfd',
-
-    # Old problems?
-    'androids', 'alphabetical',
-    'casual', 'cesta',
-    'duplicates', 'dice',
-    'happytrails',
-    'iterm',
-    'monstertruck',
-    'neolexicographicordering',
-    'primedrive', 'plantina', 'psenica',
-    'runningrace', 'reverse',
-}
-
+ignore_files = util_ignore_files.ignore_files
 name_mapping = wrong_to_right_map.name_mappings
 
 for x in get_all_problems():
