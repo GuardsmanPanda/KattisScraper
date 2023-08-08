@@ -1,5 +1,6 @@
 #! ./venv/bin/python3
 
+from collections import defaultdict
 from datetime import datetime
 from tabulate import tabulate
 import kattis_sync
@@ -46,6 +47,7 @@ repo_list = [
     # Repo("cs-un/Kattis"),
     # Repo("dakoval/Kattis-Solutions"),
     Repo("DaltonCole/ProgramingProblems", prefix='kattis'),
+    Repo("DedsecKnight/kattis-competitive-programming"),
     Repo("DomBinks/kattis"),
     Repo("donaldong/kattis", prefix="solutions"),
     Repo("DongjiY/Kattis"),
@@ -109,6 +111,8 @@ repo_list = [
     Repo("BrandonTang89/Competitive_Programming_4_Solutions"),
 ]
 
+solution_count = defaultdict(int)
+
 
 def create_and_sync_repo(rep: Repo):
     if not os.path.exists(rep.path):
@@ -146,9 +150,10 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
         return
     seen.add(canonical)
     if result == 'Solved':
-        repo.solved += 1
         repo.points_acquired += points
+        repo.solved += 1
     elif result == 'Unsolved':
+        solution_count[canonical] += 1
         repo.points_missing += points
         repo.unsolved += 1
         local_location = f"{repo.path}{('/' + '/'.join(path)) if path[0] != '' else ''}/"
@@ -157,10 +162,10 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
             for ff in os.listdir(local_location):
                 if os.path.isfile(local_location + ff):
                     file_size = max(file_size, os.path.getsize(local_location + ff))
-            unsolved.append([canonical, points, f'-{file_size}', f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}"])
+            unsolved.append([canonical, points, f'-{file_size}', f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}".replace(' ', '%20')])
         else:
             file_size = os.path.getsize(local_location + file)
-            unsolved.append([canonical, points, file_size, f"https://github.com/{repo.name}/blob/{repo.branch}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}"])
+            unsolved.append([canonical, points, file_size, f"https://github.com/{repo.name}/blob/{repo.branch}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}".replace(' ', '%20')])
     elif dir_result != 'Solved' and dir_result != 'Unsolved':
         repo.unknownFiles.append((canonical, file, full_path))
         repo.unknown += 1
@@ -169,9 +174,12 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
 
 
 path_ignore = [
-    '/.', '/_', '@todo', '/venv', '/Practice', '/debug', '/dist-newstyle/',
+    '/.', '/_', '@todo', '/venv', '/Practice', '/debug', '/dist-newstyle/', '/unsolved',
     'codingame', 'hackerrank', 'vjudge', 'leetcode', 'adventofcode',
     'cmake-build-debug',
+    '/node_modules/',
+    '/obj/Debug',
+    '/bin/Debug',
     'scl2022', 'noi_2020', 'scl2021',
     '/MatthewFreestone/Kattis/DataStructures',
     '/jasonincanada/kattis/cs/semirings',
@@ -230,6 +238,11 @@ def print_repo_stats():
     print("Total Solved: ", solved, "Total Unsolved: ", unsolved, "Total Unknown: ", unknown)
 
 
+def print_most_solved_problems():
+    print("🔱 Most Solved Problems")
+    print(tabulate(sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:15], headers=["Problem ID", "Solved"], tablefmt='outline'))
+
+
 def main():
     args = sys.argv[1:]
     if '--skip' not in args:
@@ -245,6 +258,7 @@ def main():
         kattis_sync.update_problem_length()
         kattis_sync.update_problem_solved_at()
     print_repo_stats()
+    print_most_solved_problems()
 
 
 if __name__ == '__main__':
