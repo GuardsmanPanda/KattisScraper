@@ -11,9 +11,9 @@ import os
 
 
 class Repo:
-    def __init__(self, name, prefix=None, ignore_files=False, path='repos'):
+    def __init__(self, name, prefix=None, path='repos', ignore_unknown=False):
         self.name = name
-        self.ignore_files = ignore_files
+        self.ignore_unknown = ignore_unknown
         self.path = path + "/" + name
         self.solutions = self.path + "/" + (prefix if prefix else "")
         self.solved = 0
@@ -44,9 +44,12 @@ repo_list = [
     Repo("chiralcentre/Kattis"),
     Repo("chonkykai/General-Coding", prefix='open_kattis'),
     Repo("ChrisVilches/Algorithms", prefix="kattis"),
+    Repo("Cryst67/KattisSolutions"),
     # Repo("cs-un/Kattis"),
     # Repo("dakoval/Kattis-Solutions"),
+    Repo("DangerousCactus/Kattis"),
     Repo("DaltonCole/ProgramingProblems", prefix='kattis'),
+    Repo("darrinmwiley/Kattis-Solutions"),
     Repo("DedsecKnight/kattis-competitive-programming"),
     Repo("DomBinks/kattis"),
     Repo("donaldong/kattis", prefix="solutions"),
@@ -57,6 +60,7 @@ repo_list = [
     Repo("HermonMulat/Kattis"),
     Repo("hliuliu/kattis_problems"),
     Repo("hoi-yin/Kattis-Java"),
+    Repo("hvrlxy/KATTIS", ignore_unknown=True),
     Repo("iamvickynguyen/Kattis-Solutions"),
     Repo("iandioch/solutions", prefix='kattis'),
     Repo("Ikerlb/kattis"),
@@ -77,6 +81,7 @@ repo_list = [
     Repo("leslieyip02/kattis"),
     Repo("LoiNguyennn/CompetitiveProgramming4_Solutions", prefix="Kattis_OJ"),
     # Repo("lisansulistiani/Kattis"),
+    Repo("lucasscharenbroch/KattisSolutions"),
     Repo("luffingluffy/cp", prefix='kattis'),
     Repo("Mangern/kattis"),
     Repo("MarkusMathiasen/CP4_Kattis_Solutions"),
@@ -86,7 +91,9 @@ repo_list = [
     Repo("meysamaghighi/Kattis"),
     # Repo("minidomo/Kattis"),
     Repo("mpfeifer1/Kattis"),
+    Repo("muffin02/Kattis"),
     Repo("mwebber3/CodingChallengeSites", prefix='Kattis'),
+    Repo("nerfsunny/Kattis"),
     Repo("NikitaSandstrom/Kattis-Solutions"),
     Repo("patrick-may/kattis"),
     Repo("olasundell/kattis", prefix='src/main'),
@@ -94,7 +101,7 @@ repo_list = [
     Repo("prokarius/hello-world"),
     Repo("ricardo0129/KattisSolutions"),
     Repo("rishabhgoel0213/KattisSolutions"),
-    Repo("RJTomk/Kattis", ignore_files=True),
+    Repo("RJTomk/Kattis"),
     Repo("robertusbagaskara/kattis-solutions"),
     Repo("RussellDash332/kattis"),
     Repo("rvrheenen/OpenKattis"),
@@ -148,6 +155,17 @@ def create_and_sync_repo(rep: Repo):
 def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, file=None, dir_result=None, full_path=None):
     if canonical in seen or result == 'Ignored':
         return
+
+    local_location, file_size = f"{repo.path}{('/' + '/'.join(path)) if path[0] != '' else ''}/", 0
+    if file is None:
+        for ff in os.listdir(local_location):
+            if os.path.isfile(local_location + ff):
+                file_size = max(file_size, os.path.getsize(local_location + ff))
+    else:
+        file_size = os.path.getsize(local_location + file)
+    if file_size == 0:
+        return
+
     seen.add(canonical)
     if result == 'Solved':
         repo.points_acquired += points
@@ -156,17 +174,11 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
         solution_count[canonical] += 1
         repo.points_missing += points
         repo.unsolved += 1
-        local_location = f"{repo.path}{('/' + '/'.join(path)) if path[0] != '' else ''}/"
         if file is None:
-            file_size = 0
-            for ff in os.listdir(local_location):
-                if os.path.isfile(local_location + ff):
-                    file_size = max(file_size, os.path.getsize(local_location + ff))
             unsolved.append([canonical, points, f'-{file_size}', f"https://github.com/{repo.name}/tree/{repo.branch}/{'/'.join(path)}".replace(' ', '%20')])
         else:
-            file_size = os.path.getsize(local_location + file)
             unsolved.append([canonical, points, file_size, f"https://github.com/{repo.name}/blob/{repo.branch}{('/' + '/'.join(path)) if path[0] != '' else ''}/{file}".replace(' ', '%20')])
-    elif dir_result != 'Solved' and dir_result != 'Unsolved':
+    elif dir_result != 'Solved' and dir_result != 'Unsolved' and not repo.ignore_unknown:
         repo.unknownFiles.append((canonical, file, full_path))
         repo.unknown += 1
     # else:
@@ -180,6 +192,7 @@ path_ignore = [
     '/node_modules/',
     '/obj/Debug',
     '/bin/Debug',
+    '/data/secret',
     'scl2022', 'noi_2020', 'scl2021',
     '/MatthewFreestone/Kattis/DataStructures',
     '/jasonincanada/kattis/cs/semirings',
@@ -195,10 +208,8 @@ def find_unsolved_problems(repo: Repo):
         waste, github_user, repo_name, *rest = x[0].split("/")
         dir_canonical, dir_points, dir_result = util.check_problem(rest[-1].lower())
         handle_repo_solution(dir_canonical, dir_points, dir_result, repo, rest, seen, unsolved, full_path=x[0])
-        if repo.ignore_files:
-            continue
         for file in x[2]:
-            if any(ignore in file.lower() for ignore in path_ignore):
+            if not os.path.isfile(f"{x[0]}/{file}") or any(ignore in file.lower() for ignore in path_ignore):
                 continue
             canonical, points, result = util.check_problem(file.lower(), rest[-1])
             handle_repo_solution(canonical, points, result, repo, rest, seen, unsolved, file=file,
@@ -214,11 +225,11 @@ def print_repo_stats():
         find_unsolved_problems(repo)
     solved, unsolved, unknown = 0, 0, 0
     rows = []
-    for repo in sorted(repo_list, key=lambda xx: xx.points_missing):
+    for repo in sorted(repo_list, key=lambda rr: rr.points_missing):
         solved += repo.solved
         unsolved += repo.unsolved
         unknown += repo.unknown
-        rows.append((repo.name, repo.solved, round(repo.points_acquired), repo.unsolved, round(repo.points_missing), repo.last_commit, repo.unknown))
+        rows.append((repo.name, repo.solved, round(repo.points_acquired), repo.unsolved, round(repo.points_missing), repo.last_commit, '-' if repo.ignore_unknown else repo.unknown))
         if len(repo.unknownFiles) > 0:
             print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
             print('', repo.name)

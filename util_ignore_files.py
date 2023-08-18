@@ -15,6 +15,7 @@ ignore_files = {
     'brutebrute',
     'build',
     'buildwiki',
+    'cakeytest',
 
     'c++',
     'canofbeans',
@@ -149,4 +150,7 @@ ignore_files = {
     'wronganswer',
 
     'zodiac',
+    'threads',
+    'calendar',
+    'swaptwonumbers',
 }

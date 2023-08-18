@@ -26,6 +26,7 @@ repo_ignore = {
     'NoelEmaas/kattest',
     'Matistjati/kattis-ceoi2022',
     'GuardsmanPanda/KattisScraper',
+    'Infus3d/CP-solutions',  # too cluttered
 }
 
 unix_text = "".join(open('unix_only.py', 'r').readlines())
@@ -41,7 +42,7 @@ def main():
     repos = []
     seen = set()
     for i in range(1, 6):
-        resp = requests.get(f"https://api.github.com/search/repositories?q=kattis&page={i}&per_page=100&sort=stars")
+        resp = requests.get(f"https://api.github.com/search/repositories?q=kattis&page={i}&per_page=100&sort=updated")
         if 'items' not in resp.json():
             print(resp.json())
             continue
