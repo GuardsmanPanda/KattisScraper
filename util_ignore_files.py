@@ -8,6 +8,7 @@ ignore_files = {
     'authors',
 
     'bfs',
+    'blank',
     'bnnaccuracy',
     'boolean',
     'branches',
@@ -15,9 +16,10 @@ ignore_files = {
     'brutebrute',
     'build',
     'buildwiki',
-    'cakeytest',
 
     'c++',
+    'cakeytest',
+    'calendar',
     'canofbeans',
     'cardsim',
     'carryoperation',
@@ -74,6 +76,7 @@ ignore_files = {
     'main',
     'makefile',
     'matrixmult',
+    'maxflowdinic',
     'medium',
     'melzarsmaze',
     'monstertruck',
@@ -121,6 +124,7 @@ ignore_files = {
     'src',
     'sticky',
     'stringhashing',
+    'swaptwonumbers',
 
     'tempcoderunnerfile',
     'template',
@@ -129,6 +133,7 @@ ignore_files = {
     'testgen',
     'testingtool',
     'tetest',
+    'threads',
     'timecomplexity',
     'tle',
     'tplate',
@@ -150,7 +155,4 @@ ignore_files = {
     'wronganswer',
 
     'zodiac',
-    'threads',
-    'calendar',
-    'swaptwonumbers',
 }

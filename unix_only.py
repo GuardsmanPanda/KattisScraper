@@ -93,7 +93,6 @@ repo_list = [
     Repo("mpfeifer1/Kattis"),
     Repo("muffin02/Kattis"),
     Repo("mwebber3/CodingChallengeSites", prefix='Kattis'),
-    Repo("nerfsunny/Kattis"),
     Repo("NikitaSandstrom/Kattis-Solutions"),
     Repo("patrick-may/kattis"),
     Repo("olasundell/kattis", prefix='src/main'),
@@ -101,7 +100,7 @@ repo_list = [
     Repo("prokarius/hello-world"),
     Repo("ricardo0129/KattisSolutions"),
     Repo("rishabhgoel0213/KattisSolutions"),
-    Repo("RJTomk/Kattis"),
+    Repo("RJTomk/Kattis", ignore_unknown=True),
     Repo("robertusbagaskara/kattis-solutions"),
     Repo("RussellDash332/kattis"),
     Repo("rvrheenen/OpenKattis"),
@@ -144,8 +143,12 @@ def create_and_sync_repo(rep: Repo):
 
     res = subprocess.Popen(['git', '--no-pager', 'log', '-1', '--format="%ai"'], cwd=rep.path,
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    time = res.stdout.readlines()[0].decode('utf-8').strip('\n')
-    rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').replace(tzinfo=None)
+    output = res.stdout.readlines()
+    if len(output) == 0:
+        rep.last_commit = '-'
+    else:
+        time = output[0].decode('utf-8').strip('\n')
+        rep.last_commit = datetime.strptime(time, '"%Y-%m-%d %H:%M:%S %z"').replace(tzinfo=None)
 
     res = subprocess.Popen(['git', 'branch', '--show-current'], cwd=rep.path, stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
@@ -196,6 +199,7 @@ path_ignore = [
     'scl2022', 'noi_2020', 'scl2021',
     '/MatthewFreestone/Kattis/DataStructures',
     '/jasonincanada/kattis/cs/semirings',
+    '/olasundell/kattis/src/main/java/util',
 ]
 
 
@@ -251,7 +255,7 @@ def print_repo_stats():
 
 def print_most_solved_problems():
     print("🔱 Most Solved Problems")
-    print(tabulate(sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:15], headers=["Problem ID", "Solved"], tablefmt='outline'))
+    print(tabulate(sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:16], headers=["Problem ID", "Solved"], tablefmt='outline'))
 
 
 def main():

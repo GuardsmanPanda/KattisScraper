@@ -27,6 +27,7 @@ repo_ignore = {
     'Matistjati/kattis-ceoi2022',
     'GuardsmanPanda/KattisScraper',
     'Infus3d/CP-solutions',  # too cluttered
+    'singmyr/kattis.com',
 }
 
 unix_text = "".join(open('unix_only.py', 'r').readlines())
@@ -50,7 +51,7 @@ def main():
             if x['full_name'] in seen:
                 continue
             seen.add(x['full_name'])
-            if include_repo(x['full_name']) and x['size'] > 5:
+            if include_repo(x['full_name']) and x['size'] > 0:
                 repos.append((x['full_name'], x['size']))
 
     repos = sorted(repos, key=lambda k: k[1])

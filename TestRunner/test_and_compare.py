@@ -1,5 +1,6 @@
 from random import randint, shuffle, choice,random
 import subprocess
+import time
 
 compiled = set()
 
@@ -7,11 +8,11 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        f.write("1\n")
-        f.write("450 2\n")
-        for _ in range(3):
-            x = randint(4400, 4500)
-            f.write(f"{x} {int(x * 1.005)}\n")
+        graphSize, edgeCount = 3, 5
+        f.write(f"{graphSize} {edgeCount}\n")
+        for _ in range(edgeCount):
+            f.write(f"{randint(1, graphSize)} {randint(1, graphSize)} {randint(0, 5)}\n")
+        f.write(f"{randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)}\n")
 
 
 def run_result(command):
@@ -46,10 +47,17 @@ def run_cpp(name):
 def main():
     for _ in range(100):
         generate_data()
+        ## measure method call time
+        start = time.time()
         result_other = run_cpp('other_solution')
-        result_me = run_java('wine')
+        end = time.time()
+        print(f"Other solution time: {end - start}")
+        start = time.time()
+        result_me = run_java('dragonball1')
+        end = time.time()
+        print(f"My solution time: {end - start}")
         if result_me == result_other:
-            print('OK', result_me)
+            print('OK')
         else:
             print('WA')
             with open('input.txt', 'r') as f:
