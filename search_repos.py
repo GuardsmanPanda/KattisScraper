@@ -65,7 +65,8 @@ def main():
         repo = unix_only.Repo(rr[0], path='test-repos')
         unix_only.create_and_sync_repo(repo)
         unix_only.find_unsolved_problems(repo)
-        rows.append((f"https://github.com/{repo.name}", repo.solved, round(repo.points_acquired), repo.unsolved, round(repo.points_missing), repo.last_commit, repo.unknown))
+        if repo.unsolved > 0 or repo.solved > 10 or repo.unknown > 100:
+            rows.append((f"https://github.com/{repo.name}", repo.solved, round(repo.points_acquired), repo.unsolved, round(repo.points_missing), repo.last_commit, repo.unknown))
     unix_only.print_most_solved_problems()
     print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
     print(tabulate(sorted(rows, key=lambda r: r[3]), headers=["Repository Name", "Solved", "Points", "Unsolved", "Points", "Last Commit", "Unknown"], tablefmt='outline'))

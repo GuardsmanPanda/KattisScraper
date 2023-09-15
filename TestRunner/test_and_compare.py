@@ -8,11 +8,10 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        graphSize, edgeCount = 3, 5
-        f.write(f"{graphSize} {edgeCount}\n")
-        for _ in range(edgeCount):
-            f.write(f"{randint(1, graphSize)} {randint(1, graphSize)} {randint(0, 5)}\n")
-        f.write(f"{randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)} {randint(1, graphSize)}\n")
+        size, bag = 6, 6
+        f.write(f"{size} {bag}\n")
+        for _ in range(size):
+            f.write(f"{randint(1, 10)} ")
 
 
 def run_result(command):
@@ -49,13 +48,13 @@ def main():
         generate_data()
         ## measure method call time
         start = time.time()
-        result_other = run_cpp('other_solution')
+        result_other = run_python('other_solution')
         end = time.time()
-        print(f"Other solution time: {end - start}")
+        # print(f"Other solution time: {end - start}")
         start = time.time()
-        result_me = run_java('dragonball1')
+        result_me = run_java('robbersareoftenrobbed')
         end = time.time()
-        print(f"My solution time: {end - start}")
+        # print(f"My solution time: {end - start}")
         if result_me == result_other:
             print('OK')
         else:
