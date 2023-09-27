@@ -8,10 +8,16 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        size, bag = 6, 6
-        f.write(f"{size} {bag}\n")
-        for _ in range(size):
-            f.write(f"{randint(1, 10)} ")
+        a, b, c = 50, 50, 100
+        f.write(f"{a} {b} {c}\n")
+        for _ in range(a):
+            f.write(f"{randint(1, 100)} ")
+        f.write(f"\n")
+        for _ in range(b):
+            f.write(f"{randint(1, 200)} ")
+        f.write(f"\n")
+        for _ in range(c):
+            f.write(f"{randint(1, 200)} ")
 
 
 def run_result(command):
@@ -46,17 +52,10 @@ def run_cpp(name):
 def main():
     for _ in range(100):
         generate_data()
-        ## measure method call time
-        start = time.time()
-        result_other = run_python('other_solution')
-        end = time.time()
-        # print(f"Other solution time: {end - start}")
-        start = time.time()
-        result_me = run_java('robbersareoftenrobbed')
-        end = time.time()
-        # print(f"My solution time: {end - start}")
+        result_other = run_cpp('other_solution')
+        result_me = run_java('finalexam')
         if result_me == result_other:
-            print('OK')
+            print('OK', result_me)
         else:
             print('WA')
             with open('input.txt', 'r') as f:

@@ -42,7 +42,6 @@ repo_list = [
     Repo("BooleanCube/cp", prefix='kattis'),
     # Repo("bradendubois/competitive-programming", prefix='kattis'),
     Repo("chiralcentre/Kattis"),
-    Repo("chonkykai/General-Coding", prefix='open_kattis'),
     Repo("ChrisVilches/Algorithms", prefix="kattis"),
     Repo("coding-armadillo/kattis"),
     Repo("Cryst67/KattisSolutions"),
@@ -58,10 +57,10 @@ repo_list = [
     Repo("ecly/kattis"),
     Repo("EoinDavey/Competitive", prefix='Kattis'),
     Repo("FT-Labs/KattisProblems-Python"),
+    Repo("gladwinyjh/Kattis"),
     Repo("HermonMulat/Kattis"),
     Repo("Hjaltesorgenfrei/kattisexercises"),
     Repo("hliuliu/kattis_problems"),
-    Repo("hoi-yin/Kattis-Java"),
     Repo("hvrlxy/KATTIS", ignore_unknown=True),
     Repo("iamvickynguyen/Kattis-Solutions"),
     Repo("iandioch/solutions", prefix='kattis'),
@@ -73,7 +72,6 @@ repo_list = [
     Repo("jerryxu20/kattis"),
     Repo("JKeane4210/KattisProblems"),
     Repo("JonSteinn/Kattis-Solutions"),
-    Repo("JordanHassy/Kattis"),
     Repo("kailashgautham/Kattis", prefix='completed'),
     # Repo("kantuni/Kattis"),
     # Repo("KentGrigo/Kattis"),
@@ -117,7 +115,6 @@ repo_list = [
     Repo("Thomas-McKanna/Kattis"),
     Repo("traffaillac/traf-kattis"),
     Repo("versenyi98/kattis-solutions", prefix='solutions'),
-    Repo("Wabri/SomeKattisProblem"),
     Repo("zhuodannychen/Competitive-Programming", prefix='Kattis'),
     Repo("Zyzzava/kattis"),
     # Repo("xCiaraG/Kattis"),
@@ -181,7 +178,7 @@ def handle_repo_solution(canonical, points, result, repo, path, seen, unsolved, 
         repo.points_acquired += points
         repo.solved += 1
     elif result == 'Unsolved':
-        solution_count[canonical] += 1
+        solution_count[(canonical, points)] += 1
         repo.points_missing += points
         repo.unsolved += 1
         if file is None:
@@ -236,7 +233,7 @@ def print_repo_stats():
         find_unsolved_problems(repo)
     solved, unsolved, unknown = 0, 0, 0
     rows = []
-    for repo in sorted(repo_list, key=lambda rr: rr.points_missing):
+    for repo in sorted(repo_list, key=lambda rr: (rr.points_missing, rr.points_acquired)):
         solved += repo.solved
         unsolved += repo.unsolved
         unknown += repo.unknown
@@ -262,7 +259,7 @@ def print_repo_stats():
 
 def print_most_solved_problems():
     print("🔱 Most Solved Problems")
-    print(tabulate(sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:16], headers=["Problem ID", "Solved"], tablefmt='outline'))
+    print(tabulate(map(lambda x: [*x[0]] + [x[1]], sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:20]), headers=["Problem ID", "Points", "Solved"], tablefmt='outline'))
 
 
 def main():

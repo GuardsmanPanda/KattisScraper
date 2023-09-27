@@ -42,7 +42,7 @@ def include_repo(repo):
 def main():
     repos = []
     seen = set()
-    for i in range(1, 6):
+    for i in range(1, 7):
         resp = requests.get(f"https://api.github.com/search/repositories?q=kattis&page={i}&per_page=100&sort=updated")
         if 'items' not in resp.json():
             print(resp.json())
@@ -69,7 +69,7 @@ def main():
             rows.append((f"https://github.com/{repo.name}", repo.solved, round(repo.points_acquired), repo.unsolved, round(repo.points_missing), repo.last_commit, repo.unknown))
     unix_only.print_most_solved_problems()
     print("➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
-    print(tabulate(sorted(rows, key=lambda r: r[3]), headers=["Repository Name", "Solved", "Points", "Unsolved", "Points", "Last Commit", "Unknown"], tablefmt='outline'))
+    print(tabulate(sorted(rows, key=lambda r: (r[3], r[1])), headers=["Repository Name", "Solved", "Points", "Unsolved", "Points", "Last Commit", "Unknown"], tablefmt='outline'))
 
 
 if __name__ == '__main__':

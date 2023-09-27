@@ -29,10 +29,14 @@ def update_solution_cache():
     cur = con.cursor()
     url, page = "https://open.kattis.com/problems?page=", 0
     while True:
-        print("Scraping page {}".format(page))
         data = requests.get(url + str(page), headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
-        table = soup.find('table', {'class': 'table2'}).find('tbody').find_all('tr')
+        try:
+            table = soup.find('table', {'class': 'table2'}).find('tbody').find_all('tr')
+        except AttributeError:
+            print("No more pages to scrape")
+            break
+        print("Scraping page {}".format(page))
         found = 0
         for row in table:
             cols = row.find_all('td')
