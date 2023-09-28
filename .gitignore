@@ -17,3 +17,4 @@ cookie.txt
 problem_cache.db
 problem_cache.db-journal
 test.py
+.kattisrc

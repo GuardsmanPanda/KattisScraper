@@ -1,5 +1,7 @@
+from functools import lru_cache
 from bs4 import BeautifulSoup
 from datetime import date
+import configparser
 import requests
 import sqlite3
 import util
@@ -8,12 +10,21 @@ import os
 mark_accepted_if_partial = ['mnist2class', 'mnist10class']
 
 
+@lru_cache(maxsize=None)
 def get_headers():
     headers = {
-        "User-Agent": "Guardsmanpanda Problem Scraper"
+        "User-Agent": "GuardsmanPanda's Problem Scraper"
     }
-    with open('cookie.txt', 'r') as file:
-        headers["cookie"] = file.readline().strip()
+    config = configparser.ConfigParser()
+    config.read('.kattisrc')
+    username, token = config.get('user', 'username'), config.get('user', 'token')
+    resp = requests.post(config.get('kattis', 'loginurl'), headers=headers, data={'token': token, 'user': username, 'script': 'true'})
+    if resp.status_code != 200:
+        print("Failed to login to kattis")
+        exit(1)
+    else:
+        print("Successfully logged in to kattis")
+    headers["cookie"] = resp.headers['set-cookie']
     return headers
 
 
@@ -153,7 +164,7 @@ def download_latest_solutions():
         with open('already_downloaded.txt', 'r', encoding='utf-8') as f:
             downloaded_solutions = f.read().splitlines()
     user_name = get_kattis_user_name()
-    for problem in util.get_all_from_query("SELECT id FROM problem_cache WHERE is_solved = 1 AND is_deleted = 0"):
+    for problem in util.get_all_from_query("SELECT id FROM problem_cache WHERE solution_status = 'Accepted'"):
         data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}",
                             headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')

@@ -62,7 +62,7 @@ def get_all_problems(version=0) -> dict:
 ignore_extensions = [
     'md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'class', 'zpts',
     'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore', 'layout',
-    'h', 'ipynb', 'lock', 'class', 'xml', 'pde', 'txt',
+    'h', 'ipynb', 'lock', 'class', 'xml', 'pde', 'txt', 'wsf',
 ]
 ignore_directories = {
     'CTFs', 'incomplete', 'ICPC_2019',
@@ -76,8 +76,9 @@ ignore_directories = {
 ignore_files = util_ignore_files.ignore_files
 name_mapping = wrong_to_right_map.name_mappings
 
-for x in get_all_problems():
-    name_mapping[x] = x
+if os.path.exists('problem_cache.db'):
+    for x in get_all_problems():
+        name_mapping[x] = x
 
 
 def check_problem(text: str, directory_name=None) -> (str, float, str):
