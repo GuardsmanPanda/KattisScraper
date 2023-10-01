@@ -1,4 +1,5 @@
 ignore_files = {
+    'abracadabra',
     'acc',
     'alphabetical',
     'anagram',
@@ -43,6 +44,7 @@ ignore_files = {
     'easy',
     'eksempelinput',
     'eksempeloutput',
+    'emoto',
     'error',
     'examplegameclient',
 
@@ -52,6 +54,7 @@ ignore_files = {
     'generatereadme',
     'getallproblems',
     'getyerarmorhere',
+    'golomb',
 
     'happytrails',
     'hard',
@@ -65,6 +68,7 @@ ignore_files = {
 
     'java',
     'jbuild',
+    'jtest',
 
     'kattio',
     'kattis',
@@ -91,6 +95,8 @@ ignore_files = {
 
     'pair',
     'pairstack',
+    'parsing',
+    'peanuts',
     'perfectnumber',
     'pingpong',
     'plantina',
@@ -107,13 +113,16 @@ ignore_files = {
 
     'readmegenerator',
     'reverse',
+    'romannumbers',
     'runcmd',
     'runningrace',
 
+    'scanner',
     'schedule',
     'scrapper',
     'script',
     'secret',
+    'setup',
     'setupcpp',
     'setuppython',
     'setuppythontestgen',
@@ -124,6 +133,7 @@ ignore_files = {
     'src',
     'sticky',
     'stringhashing',
+    'submit',
     'swaptwonumbers',
 
     'tempcoderunnerfile',
@@ -145,6 +155,7 @@ ignore_files = {
 
     'vaccination',
     'version',
+    'vimrc',
     'voting',
 
     'wcfd',
@@ -155,4 +166,7 @@ ignore_files = {
     'wronganswer',
 
     'zodiac',
+    'updatedocs',
+    'encoding',
+    'shut',
 }

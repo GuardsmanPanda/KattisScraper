@@ -8,16 +8,7 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        a, b, c = 50, 50, 100
-        f.write(f"{a} {b} {c}\n")
-        for _ in range(a):
-            f.write(f"{randint(1, 100)} ")
-        f.write(f"\n")
-        for _ in range(b):
-            f.write(f"{randint(1, 200)} ")
-        f.write(f"\n")
-        for _ in range(c):
-            f.write(f"{randint(1, 200)} ")
+        f.write(f"100 {randint(0, 5000)}\n")
 
 
 def run_result(command):
@@ -52,10 +43,10 @@ def run_cpp(name):
 def main():
     for _ in range(100):
         generate_data()
-        result_other = run_cpp('other_solution')
-        result_me = run_java('finalexam')
+        result_other = run_python('other_solution')
+        result_me = run_java('majorskyrsla')
         if result_me == result_other:
-            print('OK', result_me)
+            print('OK')
         else:
             print('WA')
             with open('input.txt', 'r') as f:
