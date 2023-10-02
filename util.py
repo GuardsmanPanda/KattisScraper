@@ -8,11 +8,7 @@ import re
 
 
 def create_solution_cache():
-    if os.path.exists('problem_cache.db'):
-        return
-    con = sqlite3.connect('problem_cache.db')
-    cur = con.cursor()
-    cur.execute("""
+    execute_query("""
         CREATE TABLE IF NOT EXISTS problem_cache(
             id TEXT PRIMARY KEY NOT NULL,
             name TEXT NOT NULL,
@@ -27,20 +23,21 @@ def create_solution_cache():
             last_seen_at TEXT
         )
     """)
-    con.commit()
-    con.close()
 
 
-def get_all_from_query(query: str):
+def execute_query(query: str, *args):
     con = sqlite3.connect('problem_cache.db')
     cur = con.cursor()
-    cur.execute(query)
-    return cur.fetchall()
+    cur.execute(query, args)
+    result = cur.fetchall()
+    con.commit()
+    con.close()
+    return result
 
 
 @lru_cache(maxsize=1000)
 def get_all_unsolved() -> dict:
-    return {tt[0]: tt for tt in get_all_from_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
+    return {tt[0]: tt for tt in execute_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
 
 
 part_removals = ['kattis_', 'katttis_', '-sm', '-node'] + list("_()-,'?^ +&)!=#")
@@ -48,7 +45,7 @@ part_removals = ['kattis_', 'katttis_', '-sm', '-node'] + list("_()-,'?^ +&)!=#"
 
 @lru_cache(maxsize=10)
 def get_all_problems(version=0) -> dict:
-    res = {xx[0]: xx for xx in get_all_from_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
+    res = {xx[0]: xx for xx in execute_query("SELECT id, difficulty_high, name, solution_status FROM problem_cache")}
     res2 = {}
     for k, v in res.items():
         name_match = v[2].lower()

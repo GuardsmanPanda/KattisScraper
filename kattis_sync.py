@@ -84,7 +84,7 @@ def update_solution_cache():
 
 def update_problem_created_at():
     con = sqlite3.connect('problem_cache.db')
-    for problem in util.get_all_from_query("SELECT id FROM problem_cache WHERE created_at IS NULL"):
+    for problem in util.execute_query("SELECT id FROM problem_cache WHERE created_at IS NULL"):
         print("Updating created_at for problem {}".format(problem[0]))
         data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/statistics/", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
@@ -108,7 +108,7 @@ def update_problem_created_at():
 
 def update_problem_length():
     con = sqlite3.connect('problem_cache.db')
-    for problem in util.get_all_from_query("SELECT id FROM problem_cache WHERE description_length IS NULL"):
+    for problem in util.execute_query("SELECT id FROM problem_cache WHERE description_length IS NULL"):
         print("Updating description_length for problem {}".format(problem[0]))
         data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
@@ -128,7 +128,7 @@ def update_problem_length():
 def update_problem_solved_at():
     con = sqlite3.connect('problem_cache.db')
     user_name = get_kattis_user_name()
-    for problem in util.get_all_from_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
+    for problem in util.execute_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
         print("Updating solved_at for problem {}".format(problem[0]))
         data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}",
                             headers=get_headers()).text
@@ -164,7 +164,7 @@ def download_latest_solutions():
         with open('already_downloaded.txt', 'r', encoding='utf-8') as f:
             downloaded_solutions = f.read().splitlines()
     user_name = get_kattis_user_name()
-    for problem in util.get_all_from_query("SELECT id FROM problem_cache WHERE solution_status = 'Accepted'"):
+    for problem in util.execute_query("SELECT id FROM problem_cache WHERE solution_status = 'Accepted'"):
         data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}",
                             headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
