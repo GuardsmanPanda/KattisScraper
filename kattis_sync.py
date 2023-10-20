@@ -130,7 +130,7 @@ def update_problem_solved_at():
     user_name = get_kattis_user_name()
     for problem in util.execute_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
         print("Updating solved_at for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}",
+        data = requests.get(f"https://open.kattis.com/users/{user_name}?problem={problem[0]}&status=AC",
                             headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'class': 'table2'})

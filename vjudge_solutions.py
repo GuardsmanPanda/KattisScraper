@@ -32,6 +32,8 @@ def fill_table():
         print("Fetching", problem[0])
         data = requests.get(f"https://vjudge.net/status/data?start=0&length=20&OJId=Kattis&probNum={problem[0]}&res=1").json()
         for v in data['data']:
+            if v['status'] != 'Accepted' or v['status'] != 'Accepted (100)':
+                continue
             print(v)
             unix_time = v['time']
             util.execute_query("""
