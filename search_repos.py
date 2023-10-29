@@ -28,6 +28,7 @@ repo_ignore = {
     'GuardsmanPanda/KattisScraper',
     'Infus3d/CP-solutions',  # too cluttered
     'singmyr/kattis.com',
+    'mukerem/WebScrapping',
 }
 
 unix_text = "".join(open('unix_only.py', 'r').readlines())
