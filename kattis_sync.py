@@ -43,8 +43,8 @@ def update_solution_cache():
         data = requests.get(url + str(page), headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         try:
-            table = soup.find('table', {'class': 'table2'}).find('tbody').find_all('tr')
-        except AttributeError:
+            table = soup.find_all('table', {'class': 'table2'})[1].find('tbody').find_all('tr')
+        except (AttributeError, IndexError):
             print("No more pages to scrape")
             break
         print("Scraping page {}".format(page))
