@@ -27,6 +27,7 @@ ignore_files = {
     'casual',
     'cesta',
     'check',
+    'cookie',
     'chemistry',
     'commentsoncs',
     'comp',
@@ -85,6 +86,7 @@ ignore_files = {
     'melzarsmaze',
     'monstertruck',
 
+    'ncpc',
     'neolexicographicordering',
     'node',
 

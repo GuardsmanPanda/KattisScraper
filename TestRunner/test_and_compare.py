@@ -1,4 +1,4 @@
-from random import randint, shuffle, choice,random
+from random import randint, shuffle, choice, random
 from math import comb
 import subprocess
 import time
@@ -9,8 +9,13 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        a = randint(2, 400)
-        f.write(f"{comb(a, randint(1, a//2 + 1))}\n")
+        n = randint(1, 5)
+        t = randint(1, 5)
+        f.write(f"{n} {t} 3\n")
+        for i in range(2):
+            a = randint(1, 5)
+            f.write(f"{a} ")
+        f.write("\n0 0 0\n")
 
 
 def run_result(command):
@@ -45,10 +50,10 @@ def run_cpp(name):
 def main():
     for _ in range(1000):
         generate_data()
-        result_other = run_python('other_solution')
+        result_other = run_cpp('other_solution')
         result_me = run_python('my_solution')
         if result_me == result_other:
-            print('OK', result_me)
+            print('OK')
         else:
             print('WA')
             with open('input.txt', 'r') as f:

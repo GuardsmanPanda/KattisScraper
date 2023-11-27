@@ -1,38 +1,34 @@
 #!/usr/bin/env python3
 #
-# Testing tool for the Ordla problem
+# Testing tool for the Going in Circles problem
 #
 # Usage:
 #
-#   python3 testing_tool.py [-f input_file] <program>
+#   python3 testing_tool.py [-s sequence] <program>
 #
-# If the -f parameter is not specified, sample 1 is used. Otherwise,
-# an input file is needed. The file starts with the number of words
-# in the dictionary, followed by the words in the dictionary, one per
-# line. For example:
+# The sequence must consist of characters '0' and '1' and have length at least 3.
+# If no initial sequence is specified, the sample (011) is used.
 #
-# 5
-# tolva
-# ordla
-# stoll
-# skjar
-# skoli
-
 # You can compile and run your solution as follows.
 # - You may have to replace 'python3' by just 'python'.
-# - On Windows, you may have to to replace '/' by '\'.
-
-# C++:
-#   g++ solution.cpp
-#   python3 testing_tool.py ./a.out
-
-# Java
-#   javac solution.java
-#   python3 testing_tool.py java solution
-
-# Python3
-#   python3 testing_tool.py python3 ./solution.py
-
+# - On Windows, you may have to replace '/' by '\'.
+#
+# If you have a Java solution that you would run using
+# "java MyClass", you could invoke the testing tool with:
+#
+#   python3 testing_tool.py java MyClass
+#
+# If you have a Python solution that you would run using
+# "python solution.py", you could invoke the testing tool with:
+#
+#   python3 testing_tool.py python solution.py
+#
+# If you have a C++ solution stored in a file called "sol.cpp",
+# you must first compile using "g++ sol.cpp -o sol" and then
+# invoke the testing tool with:
+#
+#   python3 testing_tool.py ./sol
+#
 # The tool is provided as-is, and you should feel free to make
 # whatever alterations or augmentations you like to it.
 #
@@ -40,14 +36,10 @@
 # is not guaranteed that a program that passes the testing tool
 # will be accepted.
 #
-
 import argparse
 import subprocess
 import sys
 import traceback
-import string
-import random
-from collections import Counter
 
 
 def write(p, line):
@@ -65,75 +57,70 @@ def read(p):
     return line
 
 
-parser = argparse.ArgumentParser(description='Testing tool for the Ordla problem')
-parser.add_argument('-f', dest='inputfile', metavar='inputfile', default=None, type=argparse.FileType('r'),
-                    help='Custom input file (defaults to sample 1)')
-parser.add_argument('program', nargs='+', help='Your solution')
+def wrong_answer(p, reason):
+    sys.stdout.write('%s\n' % reason)
+    p.kill()
+
+
+parser = argparse.ArgumentParser(description='Testing tool for the Going in Circles problem')
+parser.add_argument('-s', dest='sequence', metavar='sequence', default="011")
+parser.add_argument('program', nargs='+', help='Invocation of your solution')
 
 args = parser.parse_args()
-guesses = 0
 
-if args.inputfile is not None:
-    # Read the input file
-    with args.inputfile as f:
-        n = int(f.readline().strip())
-        assert 1 <= n <= 500, 'n must be between 1 and 500'
-        words = []
-        for i in range(n):
-            word = f.readline().strip()
-            assert len(word) == 5, 'Each word must consist of 5 letters'
-            assert set(word) <= set(string.ascii_lowercase), 'Each word must consist of lowercase English letters'
-            words.append(word)
-        assert f.readline() == '', 'Extra data at end of input file'
-else:
-    words = [
-        'tolva',
-        'ordla',
-        'stoll',
-        'skjar',
-        'skoli',
-    ]
+sequence = list(args.sequence)
+for c in sequence:
+    assert c in '01', f'Character {c} may not appear in the input sequence.'
+n = len(sequence)
+assert n >= 3, f'Sequence must have length at least 3'
+position = 0
 
-correct_word = random.choice(words)
-print('Hidden word: {}'.format(correct_word), flush=True)
+queries = 0
+queries_limit = 3 * n + 500
 
 with subprocess.Popen(" ".join(args.program), shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE,
-                          universal_newlines=True) as p:
+                      universal_newlines=True) as p:
     try:
-        write(p, '%d' % len(words))
-        for word in words:
-            write(p, word)
+        write(p, sequence[position])
+
         while True:
-            guess = read(p)
-            assert len(guess) == 5, 'Each guess must consist of 5 letters'
-            assert set(guess) <= set(string.ascii_lowercase), 'Each guess must consist of lowercase English letters'
-            assert guess in words, 'Each guess must be from the dictionary'
-            guesses += 1
+            response = read(p)
 
-            rem = Counter(correct_word)
-            pattern = ['X']*5
-            for i, c in enumerate(guess):
-                if correct_word[i] == c:
-                    pattern[i] = 'O'
-                    rem[c] -= 1
-                elif rem[c] >= 1:
-                    pattern[i] = '/'
-                    rem[c] -= 1
-
-            write(p, ''.join(pattern))
-
-            if guess == correct_word:
-                assert p.stdout.readline() == '', 'Printed extra data after finding hidden word'
-                assert p.wait() == 0, 'Did not exit cleanly after finishing'
+            if response.startswith('? '):
+                if queries == 50000:
+                    wrong_answer(p, 'Program used too many queries, aborting')
+                    break
+                queries += 1
+                action = response[2:]
+                if action == 'right':
+                    position = (position + 1) % n
+                elif action == 'left':
+                    position = (position - 1) % n
+                elif action == 'flip':
+                    sequence[position] = str(1 - int(sequence[position]))
+                else:
+                    wrong_answer(p, 'Program gave unrecognized action')
+            elif response.startswith('! '):
+                answer = response[2:]
+                assert answer.isnumeric(), 'Expected final guess to be a positive integer'
+                answer = int(answer)
+                if answer == n:
+                    assert queries <= queries_limit, 'Program printed correct solution, but used too many queries'
+                    assert p.stdout.readline() == '', 'Printed extra data after finding solution'
+                    assert p.wait() == 0, 'Did not exit cleanly after finishing'
+                    break
+                else:
+                    wrong_answer(p, 'Program printed incorrect solution')
+                    break
+            else:
+                wrong_answer(p, 'Program gave invalid response')
                 break
-            if guesses == 10000:
-                sys.stdout.write('Solution has guessed {} times without finding the hidden word. Is it stuck in a loop?\n'.format(guesses))
-                sys.stdout.flush()
 
+            write(p, sequence[position])
     except:
         traceback.print_exc()
     finally:
         sys.stdout.flush()
         sys.stderr.flush()
-        sys.stdout.write('Solution found the word in {} guesses, exit code: {}\n'.format(guesses, p.wait()))
+        sys.stdout.write(f'Used {queries} queries, limit is {queries_limit}.\nProgram exit code: {p.wait()}\n')
         sys.stdout.flush()

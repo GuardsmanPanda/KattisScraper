@@ -58,7 +58,7 @@ def get_all_problems(version=0) -> dict:
 
 ignore_extensions = [
     'md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'class', 'zpts',
-    'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore', 'layout',
+    'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore', 'layout', 'fsproj'
     'h', 'ipynb', 'lock', 'class', 'xml', 'pde', 'txt', 'wsf', 'yaml',
 ]
 ignore_directories = {
