@@ -264,7 +264,6 @@ name_mappings = {
     'buses': 'island',
     'ithqueen': 'ith',
 
-    'jackandjillcd': 'jackjill',
     'jacko': 'jackolanternjuxtaposition',
     'janitor': 'janitortroubles',
     'joinattack': 'jointattack',

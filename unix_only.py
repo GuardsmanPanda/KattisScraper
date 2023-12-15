@@ -74,6 +74,7 @@ repo_list = [
     Repo("jasonincanada/kattis"),
     Repo("Jasonzhou97/Kattis-Solutions"),
     Repo("JaydenPahukula/competitive-coding", prefix='Kattis'),
+    Repo("jeremykvlim/Kattis-Solutions"),
     Repo("jerryxu20/kattis"),
     Repo("JKeane4210/KattisProblems"),
     Repo("JonSteinn/Kattis-Solutions"),

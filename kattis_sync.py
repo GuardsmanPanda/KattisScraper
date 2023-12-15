@@ -133,7 +133,7 @@ def update_problem_solved_at():
         data = requests.get(f"https://open.kattis.com/users/{user_name}?problem={problem[0]}&status=AC",
                             headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
-        table = soup.find('table', {'class': 'table2'})
+        table = soup.find('table', {'id': 'submissions'})
         if table is None:
             continue
         first_solution = '2030-01-01'

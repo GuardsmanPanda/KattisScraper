@@ -9,13 +9,18 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        n = randint(1, 5)
-        t = randint(1, 5)
-        f.write(f"{n} {t} 3\n")
-        for i in range(2):
-            a = randint(1, 5)
-            f.write(f"{a} ")
-        f.write("\n0 0 0\n")
+        f.write(f"8 8\n")
+        f.write(f"........\n")
+        f.write(f"........\n")
+        f.write(f"xxxxxxxx\n")
+        f.write(f"........\n")
+        f.write(f"xxxxxxxx\n")
+        f.write(f"........\n")
+        f.write(f"xxxxxxxx\n")
+        f.write(f"........\n")
+        f.write(f"5\n")
+        for _ in range(5):
+            f.write(f"{randint(1, 8)} {randint(1, 8)}\n")
 
 
 def run_result(command):
@@ -51,7 +56,7 @@ def main():
     for _ in range(1000):
         generate_data()
         result_other = run_cpp('other_solution')
-        result_me = run_python('my_solution')
+        result_me = run_java('jabuke2')
         if result_me == result_other:
             print('OK')
         else:

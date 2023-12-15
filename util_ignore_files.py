@@ -69,6 +69,7 @@ ignore_files = {
 
     'java',
     'jbuild',
+    'jackandjillcd',
     'jtest',
 
     'kattio',
