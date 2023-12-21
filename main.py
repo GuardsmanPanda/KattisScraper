@@ -75,7 +75,6 @@ def main():
     compare_to_github_repo("https://github.com/JonSteinn/Kattis-Solutions")
     compare_to_github_repo("https://github.com/donaldong/kattis")
     compare_to_github_repo("https://github.com/RussellDash332/kattis")
-    compare_to_github_folder('https://github.com/HermonMulat/Kattis/tree/master/src')
     compare_to_github_folder('https://github.com/mpfeifer1/Kattis/tree/master')
     compare_to_github_repo("https://github.com/BrandonTang89/Competitive_Programming_4_Solutions")
     print_simple_stats()
