@@ -8,6 +8,7 @@ import subprocess
 import util
 import sys
 import os
+import re
 
 
 class Repo:

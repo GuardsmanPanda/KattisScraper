@@ -25,6 +25,7 @@ def get_headers():
     else:
         print("Successfully logged in to kattis")
     headers["cookie"] = resp.headers['set-cookie']
+    headers["cookie"] = config.get('user', 'cookie')  # fix for CF block, remove when can.
     return headers
 
 
