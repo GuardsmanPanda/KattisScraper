@@ -6,28 +6,7 @@ import requests
 import os
 
 repo_ignore = {
-    '0xecho/KattisSubmissionsDownloader',
-    'isaaclo97/programacion-competitiva',
-    'MilladMuhammadi/Competitive-Programming',
-    'cebrusfs/kattis-examples',
-    'CatEars/Companion',
-    'HowardChengUleth/RMRC2015-public',
-    'INDAPlus20/kevinwe-task-18',
-    'wgranados/utscode',
-    'Zantier/vikattis',
-    'dulapahv/ProblemSet',
-    'TUHHStartupEngineers-Classroom/ss23-bdsb-PriyankaKattishetti',
-    'jaARke/LeetCode',
-    'Rikveet/Programing_Problems_Manager',
-    'MrStarman18/CompetitionProgramming',
-    'kattisA/kattisa.github.io',
-    'ishandutta2007/chatgpt-competitive-programming-extension',
-    'jmerle/competitive-companion',
-    'NoelEmaas/kattest',
-    'Matistjati/kattis-ceoi2022',
     'GuardsmanPanda/KattisScraper',
-    'Infus3d/CP-solutions',  # too cluttered
-    'singmyr/kattis.com',
     'mukerem/WebScrapping',
 }
 

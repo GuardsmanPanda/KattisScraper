@@ -1,3 +1,5 @@
+#! ./venv/bin/python3
+
 from datetime import datetime
 import requests
 import util
@@ -26,7 +28,7 @@ def ensure_table_created():
 def fill_table():
     problems = util.execute_query(f"""
         SELECT id FROM problem_cache WHERE solution_status != 'Accepted'
-        AND id NOT IN (SELECT problem_id FROM vjudge_solutions WHERE solution_status IN ('Accepted', 'Accepted (100)'))
+        AND id NOT IN (SELECT problem_id FROM vjudge_solutions WHERE solution_status IN ('Accepted', 'Accepted (100)') AND access_status = 2)
     """)
     for problem in problems:
         print("Fetching", problem[0])

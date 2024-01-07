@@ -40,7 +40,7 @@ def get_all_unsolved() -> dict:
     return {tt[0]: tt for tt in execute_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
 
 
-part_removals = ['kattis_', 'katttis_', '-sm', '-node'] + list("_()-,'?^ +&)!=#")
+part_removals = ['kattis_', 'kattis-', 'katttis_', '_kattis', '-sm', '-node'] + list("_()-,'?^ +&)!=#")
 
 
 @lru_cache(maxsize=10)
@@ -56,11 +56,12 @@ def get_all_problems(version=0) -> dict:
     return res | res2
 
 
-ignore_extensions = [
-    'md', 'out', 'in', 'txt', 'jpg', 'json', 'ans', 'class', 'zpts',
-    'sh', 'mod', 'png', 'toml', 'nix', 'yml', 'ignore', 'layout', 'fsproj'
-    'h', 'ipynb', 'lock', 'class', 'xml', 'pde', 'txt', 'wsf', 'yaml',
-]
+ignore_suffix = (
+    '.md', '.out', '.in', '.txt', '.jpg', '.json', '.ans', '.class', '.zpts',
+    '.sh', '.mod', '.png', '.toml', '.nix', '.yml', '.ignore', '.layout', '.fsproj',
+    '.h', '.ipynb', '.lock', '.class', '.xml', '.pde', '.txt', '.wsf', '.yaml',
+    'template.java', 'template.py', 'template.go',
+)
 ignore_directories = {
     'CTFs', 'incomplete', 'ICPC_2019',
     'KattisRSSParser', 'KattisRSSNotifier',
@@ -79,7 +80,7 @@ if os.path.exists('problem_cache.db'):
 
 
 def check_problem(text: str, directory_name=None) -> (str, float, str):
-    if len(text) >= 60:
+    if any(text.endswith(suffix) for suffix in ignore_suffix) or len(text) >= 60:
         return text, -1, 'Ignored'
 
     if directory_name is not None and directory_name in ignore_directories:
@@ -96,7 +97,7 @@ def check_problem(text: str, directory_name=None) -> (str, float, str):
     if name in problems:
         return problems[name][0], problems[name][1], 'Solved' if problems[name][3] == 'Accepted' else 'Unsolved'
 
-    if len(name) < 3 or name.isdigit() or ext in ignore_extensions:
+    if len(name) < 3 or name.isdigit():
         return text, -1, 'Ignored'
 
     # Try to remove digits and add / remove 's'

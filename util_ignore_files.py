@@ -11,6 +11,7 @@ ignore_files = {
     'bfs',
     'blank',
     'bnnaccuracy',
+    'boilerplate',
     'boolean',
     'branches',
     'breadthfirstsearch',
@@ -27,12 +28,12 @@ ignore_files = {
     'casual',
     'cesta',
     'check',
-    'cookie',
     'chemistry',
     'commentsoncs',
     'comp',
     'completed',
     'contest4solutions',
+    'cookie',
 
     'datetime',
     'deque',
@@ -46,10 +47,12 @@ ignore_files = {
     'eksempelinput',
     'eksempeloutput',
     'emoto',
+    'encoding',
     'error',
     'examplegameclient',
 
     'fahrenheit',
+    'fastflow',
     'food',
 
     'generatereadme',
@@ -67,9 +70,9 @@ ignore_files = {
     'input',
     'iterm',
 
+    'jackandjillcd',
     'java',
     'jbuild',
-    'jackandjillcd',
     'jtest',
 
     'kattio',
@@ -78,6 +81,7 @@ ignore_files = {
     'lambdas',
     'lap',
     'license',
+    'lis',
 
     'main',
     'makefile',
@@ -99,7 +103,9 @@ ignore_files = {
     'pair',
     'pairstack',
     'parsing',
+    'pdc',
     'peanuts',
+    'pebble',
     'perfectnumber',
     'pingpong',
     'plantina',
@@ -107,6 +113,7 @@ ignore_files = {
     'point2d',
     'polynomial',
     'primedrive',
+    'problemlistgen',
     'programmingpractice',
     'psenica',
     'public',
@@ -129,16 +136,19 @@ ignore_files = {
     'setupcpp',
     'setuppython',
     'setuppythontestgen',
+    'shut',
     'smallinput',
     'sol',
     'solution',
     'solutions',
+    'splash',
     'src',
     'sticky',
     'stringhashing',
     'submit',
     'swaptwonumbers',
 
+    'temp',
     'tempcoderunnerfile',
     'template',
     'test',
@@ -153,6 +163,7 @@ ignore_files = {
     'trie',
     'txtenc',
 
+    'updatedocs',
     'util',
     'utils',
 
@@ -169,7 +180,4 @@ ignore_files = {
     'wronganswer',
 
     'zodiac',
-    'updatedocs',
-    'encoding',
-    'shut',
 }
