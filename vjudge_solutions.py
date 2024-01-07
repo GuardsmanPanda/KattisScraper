@@ -41,6 +41,8 @@ def fill_table():
             util.execute_query("""
                 INSERT INTO vjudge_solutions(problem_id, solution_id, length, language, runtime, user_name, solution_status, access_status, submitted_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (problem_id, solution_id) DO UPDATE SET
+                    access_status = excluded.access_status
             """, v['probNum'], v['runId'], v['sourceLength'], v['language'], v['runtime'], v['userName'], v['status'], v['access'], datetime.fromtimestamp(unix_time//1000).strftime('%Y-%m-%d %H:%M:%S'))
 
 
