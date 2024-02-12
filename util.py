@@ -40,7 +40,9 @@ def get_all_unsolved() -> dict:
     return {tt[0]: tt for tt in execute_query("SELECT id, difficulty_high, name FROM problem_cache WHERE solution_status != 'Accepted'")}
 
 
-part_removals = ['kattis_', 'kattis-', 'katttis_', '_kattis', '-sm', '-node'] + list("_()-,'?^ +&)!=#")
+part_removals = [
+    'kattis_', 'kattis-', 'katttis_', '_kattis', '-sm', '-node', '_hcz', '_laurence', '_wally', '_lok'
+] + list("_()-,'?^ +&)!=#")
 
 
 @lru_cache(maxsize=10)

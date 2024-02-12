@@ -22,7 +22,7 @@ def include_repo(repo):
 def main():
     repos = []
     seen = set()
-    for i in range(1, 7):
+    for i in range(1, 2):
         resp = requests.get(f"https://api.github.com/search/repositories?q=kattis&page={i}&per_page=100&sort=updated")
         if 'items' not in resp.json():
             print(resp.json())

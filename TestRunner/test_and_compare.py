@@ -8,19 +8,15 @@ compiled = set()
 
 def generate_data():
     """Generate test data and write it to data.txt"""
+    arr = [["." for _ in range(8)] for _ in range(8)]
+    arr[randint(0, 7)][randint(0, 7)] = 'k'
+    arr[randint(0, 7)][randint(0, 7)] = 'K'
+    arr[randint(0, 7)][randint(0, 7)] = 'R'
+    if sum(1 for cc in arr for c in cc if c == '.') != 61:
+        return
     with open('input.txt', 'w') as f:
-        f.write(f"8 8\n")
-        f.write(f"........\n")
-        f.write(f"........\n")
-        f.write(f"xxxxxxxx\n")
-        f.write(f"........\n")
-        f.write(f"xxxxxxxx\n")
-        f.write(f"........\n")
-        f.write(f"xxxxxxxx\n")
-        f.write(f"........\n")
-        f.write(f"5\n")
-        for _ in range(5):
-            f.write(f"{randint(1, 8)} {randint(1, 8)}\n")
+        for a in arr:
+            f.write(f"{''.join(a)}\n")
 
 
 def run_result(command):
@@ -56,7 +52,7 @@ def main():
     for _ in range(1000):
         generate_data()
         result_other = run_cpp('other_solution')
-        result_me = run_java('jabuke2')
+        result_me = run_java('checkmateinone')
         if result_me == result_other:
             print('OK')
         else:

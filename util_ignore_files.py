@@ -147,6 +147,8 @@ ignore_files = {
     'stringhashing',
     'submit',
     'swaptwonumbers',
+    'commonanagrams',
+    'palindromicsequence',
 
     'temp',
     'tempcoderunnerfile',

@@ -41,6 +41,7 @@ repo_list = [
     Repo("AugustDanell/Kattis-Assignments"),
     Repo("ayoubc/competitive-programming", prefix='online_judges/kattis'),
     Repo("BC46/kattis-solutions"),
+    Repo("buckeye-cn/ACM_ICPC_Materials", prefix='solutions/kattis'),
     Repo("bmjones92/Kattis"),
     Repo("BooleanCube/cp", prefix='kattis'),
     # Repo("bradendubois/competitive-programming", prefix='kattis'),
@@ -61,11 +62,15 @@ repo_list = [
     Repo("ecly/kattis"),
     Repo("E-M-Bailey/competitive_programming", prefix='kattis'),
     Repo("EoinDavey/Competitive", prefix='Kattis'),
+    # Repo("EhtQuyet/OpenKattis"), # clone of mpfeifer1?
+    Repo("f4t4nt/competitive-programming", prefix="archive/Kattis"),
     Repo("FT-Labs/KattisProblems-Python"),
+    Repo("gandhi56/Competitive-Programming", prefix='kattis'),
     Repo("gladwinyjh/Kattis"),
-    Repo("HermonMulat/Kattis"),
+    Repo("HermonMulat/Kattis", ignore_unknown=True),
     Repo("Hjaltesorgenfrei/kattisexercises"),
     Repo("hliuliu/kattis_problems"),
+    Repo("hljeong/cp", prefix="kattis"),
     Repo("HowardChengUleth/Contest", prefix="kattis"),
     Repo("hugo-morvan/Kattis-Solutions"),
     Repo("hvrlxy/KATTIS", ignore_unknown=True),
@@ -80,7 +85,7 @@ repo_list = [
     Repo("JaydenPahukula/competitive-coding", prefix='Kattis'),
     Repo("jeremykvlim/Kattis-Solutions"),
     Repo("jerryxu20/kattis"),
-    Repo("JKeane4210/KattisProblems"),
+    Repo("JKeane4210/KattisProblems", ignore_unknown=True),
     Repo("JonSteinn/Kattis-Solutions"),
     Repo("kahuku/competitive_programming", prefix="kattis"),
     Repo("kailashgautham/Kattis", prefix='completed'),
@@ -93,6 +98,7 @@ repo_list = [
     Repo("kumarchak30/Kattis-solutions"),
     Repo("leslieyip02/kattis"),
     Repo("LoiNguyennn/CompetitiveProgramming4_Solutions", prefix="Kattis_OJ"),
+    Repo("lorenzo-ferrari/kattis"),
     # Repo("lisansulistiani/Kattis"),
     Repo("lucasscharenbroch/kattis-solutions"),
     Repo("luffingluffy/cp", prefix='kattis'),
@@ -110,8 +116,9 @@ repo_list = [
     Repo("muffin02/Kattis"),
     Repo("mwebber3/CodingChallengeSites", prefix='Kattis'),
     Repo("norlen/kattis"),
-    Repo("patrick-may/kattis"),
     Repo("olasundell/kattis", prefix='src/main'),
+    Repo("ong-wei-hong/coding-problems", prefix='kattis'),
+    Repo("patrick-may/kattis"),
     # Repo("PedroContipelli/Kattis"),
     Repo("prokarius/hello-world"),
     Repo("ricardo0129/KattisSolutions"),
@@ -127,6 +134,7 @@ repo_list = [
     Repo("shakeelsamsu/kattis"),
     Repo("ssmall90/Open-Kattis"),
     Repo("SurgicalSteel/Competitive-Programming", prefix='Kattis-Solutions'),
+    Repo("Tetragonal/kattis-solutions"),
     Repo("Thomas-McKanna/Kattis"),
     Repo("traffaillac/traf-kattis"),
     Repo("tylanmm/comp_prog", prefix="kattis/solved"),
@@ -151,7 +159,7 @@ def create_and_sync_repo(rep: Repo):
         else:
             print("Successfully cloned " + rep.name)
     else:
-        res = subprocess.Popen(['git', 'pull'], cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        res = subprocess.Popen(['git', 'pull', '--rebase'], cwd=rep.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         res.wait()
         if res.returncode == 0:
             lines = res.stdout.readlines()
