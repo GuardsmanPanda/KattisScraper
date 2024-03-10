@@ -59,7 +59,7 @@ def get_all_problems(version=0) -> dict:
 
 
 ignore_suffix = (
-    '.md', '.out', '.in', '.txt', '.jpg', '.json', '.ans', '.class', '.zpts',
+    '.md', '.out', '.in', '.txt', '.jpg', '.json', '.ans', '.class', '.zpts', 'html', 'css',
     '.sh', '.mod', '.png', '.toml', '.nix', '.yml', '.ignore', '.layout', '.fsproj',
     '.h', '.ipynb', '.lock', '.class', '.xml', '.pde', '.txt', '.wsf', '.yaml',
     'template.java', 'template.py', 'template.go',

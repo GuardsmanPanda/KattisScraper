@@ -1,34 +1,32 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 #
-# Testing tool for the Going in Circles problem
+# Testing tool for the Gullpeningastaflar problem.
 #
 # Usage:
 #
-#   python3 testing_tool.py [-s sequence] <program>
+#   python3 testing_tool.py [-f input_file] <program>
 #
-# The sequence must consist of characters '0' and '1' and have length at least 3.
-# If no initial sequence is specified, the sample (011) is used.
+# If the -f parameter is not specified, a random sample with n = 10 is used.
+# Otherwise, an input file is needed. The file should contain n, k on the first
+# line, where k is the location of the real coins. For example:
+#
+# 10 4
 #
 # You can compile and run your solution as follows.
 # - You may have to replace 'python3' by just 'python'.
-# - On Windows, you may have to replace '/' by '\'.
-#
-# If you have a Java solution that you would run using
-# "java MyClass", you could invoke the testing tool with:
-#
-#   python3 testing_tool.py java MyClass
-#
-# If you have a Python solution that you would run using
-# "python solution.py", you could invoke the testing tool with:
-#
-#   python3 testing_tool.py python solution.py
-#
-# If you have a C++ solution stored in a file called "sol.cpp",
-# you must first compile using "g++ sol.cpp -o sol" and then
-# invoke the testing tool with:
-#
-#   python3 testing_tool.py ./sol
-#
+# - On Windows, you may have to to replace '/' by '\'.
+
+# C++:
+#   g++ solution.cpp
+#   python3 testing_tool.py ./a.out
+
+# Java
+#   javac solution.java
+#   python3 testing_tool.py java solution
+
+# Python3
+#   python3 testing_tool.py python3 ./solution.py
+
 # The tool is provided as-is, and you should feel free to make
 # whatever alterations or augmentations you like to it.
 #
@@ -36,10 +34,13 @@
 # is not guaranteed that a program that passes the testing tool
 # will be accepted.
 #
+
 import argparse
 import subprocess
 import sys
 import traceback
+import string
+import random
 
 
 def write(p, line):
@@ -57,70 +58,58 @@ def read(p):
     return line
 
 
-def wrong_answer(p, reason):
-    sys.stdout.write('%s\n' % reason)
-    p.kill()
-
-
-parser = argparse.ArgumentParser(description='Testing tool for the Going in Circles problem')
-parser.add_argument('-s', dest='sequence', metavar='sequence', default="011")
-parser.add_argument('program', nargs='+', help='Invocation of your solution')
+parser = argparse.ArgumentParser(description='Testing tool for gullpeningastaflar')
+parser.add_argument('-f', dest='inputfile', metavar='inputfile', default=None, type=argparse.FileType('r'),
+                    help='Custom input file (defaults to random)')
+parser.add_argument('program', nargs='+', help='Your solution')
 
 args = parser.parse_args()
+n, k = 10, random.randint(1, 10)
 
-sequence = list(args.sequence)
-for c in sequence:
-    assert c in '01', f'Character {c} may not appear in the input sequence.'
-n = len(sequence)
-assert n >= 3, f'Sequence must have length at least 3'
-position = 0
-
-queries = 0
-queries_limit = 3 * n + 500
+if args.inputfile is not None:
+    # Read the input file
+    with args.inputfile as f:
+        n, k = map(int, f.readline().strip().split())
+        assert 1 <= n <= 1024, 'n must be a positive integer that is at most 1024'
+        if n != 1024:
+            print('Warning: n is not equal to 1024')
+        assert 1 <= k <= n, "k must be betweeen 1 and n, inclusive"
+        assert f.readline() == '', 'Extra data at end of input file'
 
 with subprocess.Popen(" ".join(args.program), shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE,
                       universal_newlines=True) as p:
     try:
-        write(p, sequence[position])
-
+        write(p, f"{n}")
+        query_count = 0
         while True:
-            response = read(p)
-
-            if response.startswith('? '):
-                if queries == 50000:
-                    wrong_answer(p, 'Program used too many queries, aborting')
-                    break
-                queries += 1
-                action = response[2:]
-                if action == 'right':
-                    position = (position + 1) % n
-                elif action == 'left':
-                    position = (position - 1) % n
-                elif action == 'flip':
-                    sequence[position] = str(1 - int(sequence[position]))
-                else:
-                    wrong_answer(p, 'Program gave unrecognized action')
-            elif response.startswith('! '):
-                answer = response[2:]
-                assert answer.isnumeric(), 'Expected final guess to be a positive integer'
-                answer = int(answer)
-                if answer == n:
-                    assert queries <= queries_limit, 'Program printed correct solution, but used too many queries'
-                    assert p.stdout.readline() == '', 'Printed extra data after finding solution'
-                    assert p.wait() == 0, 'Did not exit cleanly after finishing'
-                    break
-                else:
-                    wrong_answer(p, 'Program printed incorrect solution')
-                    break
-            else:
-                wrong_answer(p, 'Program gave invalid response')
+            query = read(p).strip().split()
+            operation = query.pop(0)
+            assert operation in "?!", f"Expected operation to be ? or ! but got {operation}"
+            is_final_answer = operation == '!'
+            if is_final_answer:
+                assert len(query) == 1, 'Too many values in final answer'
+                final_answer = int(query[0])
+                assert 1 <= final_answer <= n, f'Final answer must be between 1 and {n}, got {final_answer}'
+                assert final_answer == k, f'Final answer incorrect. Expected {k}, but got {final_answer}'
                 break
+            else:
+                assert query_count < 2 * n, f'Exceeded max queries'
+                query_count += 1
+                assert len(query) == n, f'Query is not of length {n}, actual length is {len(query)}'
+                query = list(map(int, query))
+                sm = 0
+                for j in range(n):
+                    assert 0 <= query[j] <= n, f'Query value {query[j]} at index {j} is out of bounds'
+                    sm += query[j] * (n + 1) if j + 1 == k else query[j] * n
 
-            write(p, sequence[position])
-    except:
-        traceback.print_exc()
-    finally:
+                write(p, f'{sm}')
+        assert p.stdout.readline() == '', 'Printed extra data after finding answer'
+        assert p.wait() == 0, 'Did not exit cleanly after finishing'
         sys.stdout.flush()
         sys.stderr.flush()
-        sys.stdout.write(f'Used {queries} queries, limit is {queries_limit}.\nProgram exit code: {p.wait()}\n')
+        sys.stdout.write(f'Solved case correctly in {query_count} queries.\n')
         sys.stdout.flush()
+    except:
+        write(p, "0")
+        p.kill()
+        traceback.print_exc()

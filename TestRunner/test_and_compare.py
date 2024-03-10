@@ -8,15 +8,11 @@ compiled = set()
 
 def generate_data():
     """Generate test data and write it to data.txt"""
-    arr = [["." for _ in range(8)] for _ in range(8)]
-    arr[randint(0, 7)][randint(0, 7)] = 'k'
-    arr[randint(0, 7)][randint(0, 7)] = 'K'
-    arr[randint(0, 7)][randint(0, 7)] = 'R'
-    if sum(1 for cc in arr for c in cc if c == '.') != 61:
-        return
     with open('input.txt', 'w') as f:
-        for a in arr:
-            f.write(f"{''.join(a)}\n")
+        f.write('5\n')
+        res = ["1", "1", "2", "2", "3"]
+        shuffle(res)
+        f.write(f'{" ".join(res)}\n')
 
 
 def run_result(command):
@@ -51,8 +47,8 @@ def run_cpp(name):
 def main():
     for _ in range(1000):
         generate_data()
-        result_other = run_cpp('other_solution')
-        result_me = run_java('checkmateinone')
+        result_other = run_python('other_solution')
+        result_me = run_python('my_solution')
         if result_me == result_other:
             print('OK')
         else:
