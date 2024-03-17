@@ -109,13 +109,19 @@ def update_problem_created_at():
 
 def update_problem_length():
     con = sqlite3.connect('problem_cache.db')
-    for problem in util.execute_query("SELECT id FROM problem_cache WHERE description_length IS NULL"):
+    for problem in util.execute_query("SELECT id FROM problem_cache WHERE description_length IS NULL OR from_contest IS NULL"):
         print("Updating description_length for problem {}".format(problem[0]))
         data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
+        if soup.find('div', {'class': 'problembody'}) is None:
+            print("*** Problem {} has no description ***".format(problem[0]))
+            continue
         description = soup.find('div', {'class': 'problembody'}).text
-        contest = soup.find('div', {'data-name': 'metadata_item-source'})
-        contest = contest.find('a').text if contest is not None else None
+        contest = None
+        for a_data in soup.find('div', {'class': 'metadata-license-card'}).find_all('a'):
+            if '/problem-sources/' in a_data.get('href'):
+                contest = a_data.text
+                break
         print(problem, contest)
         con.cursor().execute("""
             UPDATE problem_cache

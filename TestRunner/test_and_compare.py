@@ -9,10 +9,11 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        f.write('5\n')
-        res = ["1", "1", "2", "2", "3"]
-        shuffle(res)
-        f.write(f'{" ".join(res)}\n')
+        f.write('3 50 3\n')
+        f.write(f'{randint(1, 60)} {randint(1, 60)} {randint(1, 60)}\n')
+        f.write(f'{randint(1, 10)} {randint(1, 10)} {randint(1, 10)}\n')
+        f.write(f'{randint(1, 10)} {randint(1, 10)} {randint(1, 10)}\n')
+        f.write(f'{randint(1, 10)} {randint(1, 10)} {randint(1, 10)}\n')
 
 
 def run_result(command):
@@ -47,8 +48,8 @@ def run_cpp(name):
 def main():
     for _ in range(1000):
         generate_data()
-        result_other = run_python('other_solution')
-        result_me = run_python('my_solution')
+        result_other = run_cpp('other_solution')
+        result_me = run_java('upandaway')
         if result_me == result_other:
             print('OK')
         else:
