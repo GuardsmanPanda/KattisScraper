@@ -56,9 +56,11 @@ repo_list = [
     Repo("DetectiveGot/Coding", prefix="Kattis"),
     Repo("donaldong/kattis", prefix="solutions"),
     Repo("dustin-ward/competitive-programming", prefix="Kattis"),
-    Repo("ecly/kattis"),
     Repo("E-M-Bailey/competitive_programming", prefix='kattis'),
+    Repo("ecly/kattis"),
+    Repo("ehnryx/acm", prefix='kattis'),
     Repo("EoinDavey/Competitive", prefix='Kattis'),
+    Repo("Eroui/Kattis"),
     Repo("f4t4nt/competitive-programming", prefix="archive/Kattis"),
     Repo("FT-Labs/KattisProblems-Python"),
     Repo("gandhi56/Competitive-Programming", prefix='kattis'),
@@ -81,7 +83,7 @@ repo_list = [
     Repo("jasonincanada/kattis"),
     Repo("Jasonzhou97/Kattis-Solutions"),
     Repo("JaydenPahukula/competitive-coding", prefix='Kattis'),
-    Repo("jeremykvlim/Kattis-Solutions"),
+    Repo("jeremykvlim/kattis"),
     Repo("jerryxu20/kattis"),
     Repo("JKeane4210/KattisProblems", ignore_unknown=True),
     Repo("JonSteinn/Kattis-Solutions"),
@@ -94,6 +96,7 @@ repo_list = [
     Repo("leslieyip02/kattis"),
     Repo("LoiNguyennn/CompetitiveProgramming4_Solutions", prefix="Kattis_OJ"),
     Repo("lorenzo-ferrari/kattis"),
+    Repo("lrvideckis/Red-Team-Code", prefix="open_kattis"),  # remove when done all
     Repo("lucasscharenbroch/kattis-solutions"),
     Repo("luffingluffy/cp", prefix='kattis'),
     Repo("mackeper/AlgorithmsAndDataStructures", prefix="kattis"),
@@ -105,6 +108,7 @@ repo_list = [
     Repo("Mdan12/Kattis-solutions"),
     Repo("meysamaghighi/Kattis"),
     Repo("moltenpanther/Kattis"),
+    Repo("mostafa-saad/MyCompetitiveProgramming", ignore_unknown=True),
     Repo("mpfeifer1/Kattis"),
     Repo("mukerem/competitive-programming", prefix="kattis"),
     Repo("muffin02/Kattis"),
@@ -113,7 +117,9 @@ repo_list = [
     Repo("olasundell/kattis", prefix='src/main'),
     Repo("ong-wei-hong/coding-problems", prefix='kattis'),
     Repo("patrick-may/kattis"),
+    Repo("pocketzeroes/proekt", ignore_unknown=True),
     Repo("prokarius/hello-world"),
+    Repo("pyetwi/Kattis"),
     Repo("ricardo0129/KattisSolutions"),
     Repo("Richw818/kattis"),
     Repo("rishabhgoel0213/KattisSolutions"),
@@ -124,10 +130,12 @@ repo_list = [
     Repo("samjwu/OpenKattis"),
     Repo("sbrommer/kattis"),
     Repo("sergiosja/Kattis"),
+    Repo("smh997/Problem-Solving", prefix='Online Judges/Kattis'),
     Repo("Superbestron/CP-Journey", prefix="CP4"),
     Repo("SurgicalSteel/Competitive-Programming", prefix='Kattis-Solutions'),
     Repo("teekaytai/competitive-programming"),
     Repo("Tetragonal/kattis-solutions"),
+    Repo("thelokeshgoel00/Competitive_Programming", prefix='Kattis'),
     Repo("Thomas-McKanna/Kattis"),
     Repo("traffaillac/traf-kattis"),
     Repo("tylanmm/comp_prog", prefix="kattis/solved"),
@@ -292,7 +300,7 @@ def print_repo_stats():
 
 def print_most_solved_problems():
     print("🔱 Most Solved Problems")
-    print(tabulate(map(lambda x: [*x[0]] + [x[1]], sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:20]), headers=["Problem ID", "Points", "Solved"], tablefmt='outline'))
+    print(tabulate(map(lambda x: [*x[0]] + [x[1]], sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:30]), headers=["Problem ID", "Points", "Solved"], tablefmt='outline'))
 
 
 def main():
@@ -306,7 +314,7 @@ def main():
 
     if '--scrape' in args:
         kattis_sync.update_solution_cache()
-        # kattis_sync.update_problem_created_at()
+        kattis_sync.update_problem_created_at()
         kattis_sync.update_problem_length()
         kattis_sync.update_problem_solved_at()
     print_repo_stats()

@@ -18,7 +18,8 @@ def get_headers():
     config = configparser.ConfigParser()
     config.read('.kattisrc')
     username, token = config.get('user', 'username'), config.get('user', 'token')
-    resp = requests.post(config.get('kattis', 'loginurl'), headers=headers, data={'token': token, 'user': username, 'script': 'true'})
+    resp = requests.post(config.get('kattis', 'loginurl'), headers=headers,
+                         data={'token': token, 'user': username, 'script': 'true'})
     if resp.status_code != 200:
         print("Failed to login to kattis")
         exit(1)
@@ -74,7 +75,8 @@ def update_solution_cache():
                     difficulty_high = excluded.difficulty_high,
                     solution_status = excluded.solution_status,
                     last_seen_at = excluded.last_seen_at
-            """, (problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
+            """, (
+            problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
             found += 1
         page += 1
         if found == 0:
@@ -109,7 +111,7 @@ def update_problem_created_at():
 
 def update_problem_length():
     con = sqlite3.connect('problem_cache.db')
-    for problem in util.execute_query("SELECT id FROM problem_cache WHERE description_length IS NULL OR from_contest IS NULL"):
+    for problem in util.execute_query("SELECT id FROM problem_cache WHERE description_length IS NULL"):
         print("Updating description_length for problem {}".format(problem[0]))
         data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/", headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
@@ -135,9 +137,10 @@ def update_problem_length():
 def update_problem_solved_at():
     con = sqlite3.connect('problem_cache.db')
     user_name = get_kattis_user_name()
-    for problem in util.execute_query("SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
+    for problem in util.execute_query(
+            "SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
         print("Updating solved_at for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/users/{user_name}?problem={problem[0]}&status=AC",
+        data = requests.get(f"https://open.kattis.com/users/{user_name}?problem={problem[0]}&status=AC&tab=submissions",
                             headers=get_headers()).text
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'id': 'submissions'})
@@ -148,7 +151,7 @@ def update_problem_solved_at():
             tds = xx.find_all('td')
             if len(tds) == 2:
                 continue
-            if 'Accepted' in tds[3].find('div').text:
+            if 'Accepted' in tds[4].find('div').text:
                 first_solution = min(tds[1].text.strip(), first_solution)
         if len(first_solution) < 15:
             first_solution = None

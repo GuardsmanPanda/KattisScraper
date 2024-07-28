@@ -1,6 +1,7 @@
 from random import randint, shuffle, choice, random
 from math import comb
 import subprocess
+import string
 import time
 
 compiled = set()
@@ -9,11 +10,12 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        f.write('3 50 3\n')
-        f.write(f'{randint(1, 60)} {randint(1, 60)} {randint(1, 60)}\n')
-        f.write(f'{randint(1, 10)} {randint(1, 10)} {randint(1, 10)}\n')
-        f.write(f'{randint(1, 10)} {randint(1, 10)} {randint(1, 10)}\n')
-        f.write(f'{randint(1, 10)} {randint(1, 10)} {randint(1, 10)}\n')
+        letters = string.digits + ' '
+        target = ''.join(choice(letters) for i in range(8))
+        f.write(f'2\n')
+        f.write(f'{"".join(choice(letters) for i in range(2))}\n')
+        f.write(f'{"".join(choice(letters) for i in range(2))}\n')
+        f.write(f'{target}\n')
 
 
 def run_result(command):
@@ -46,10 +48,10 @@ def run_cpp(name):
 
 
 def main():
-    for _ in range(1000):
+    for _ in range(300):
         generate_data()
         result_other = run_cpp('other_solution')
-        result_me = run_java('upandaway')
+        result_me = run_java('stringmultimatching')
         if result_me == result_other:
             print('OK')
         else:
