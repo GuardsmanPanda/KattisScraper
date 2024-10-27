@@ -240,11 +240,19 @@ path_ignore = [
     '/obj/Debug',
     '/bin/Debug',
     '/data/secret',
-    'scl2022', 'noi_2020', 'scl2021',
+
     '/MatthewFreestone/Kattis/DataStructures',
     '/jasonincanada/kattis/cs/semirings',
     '/moltenpanther/Kattis/resources',
     '/olasundell/kattis/src/main/java/util',
+]
+
+ignore_file_prefix = [
+    'cf', 'cmake',
+    'leetcode', 'lc_',
+    'noi2020',
+    'scl2022',  'scl2021',
+    'vjudge'
 ]
 
 
@@ -258,7 +266,7 @@ def find_unsolved_problems(repo: Repo):
         dir_canonical, dir_points, dir_result = util.check_problem(rest[-1].lower())
         handle_repo_solution(dir_canonical, dir_points, dir_result, repo, rest, seen, unsolved, full_path=x[0])
         for file in x[2]:
-            if not os.path.isfile(f"{x[0]}/{file}") or any(ignore in file.lower() for ignore in path_ignore):
+            if not os.path.isfile(f"{x[0]}/{file}") or any(file.lower().startswith(ignore) for ignore in ignore_file_prefix):
                 continue
             canonical, points, result = util.check_problem(file.lower(), rest[-1])
             handle_repo_solution(canonical, points, result, repo, rest, seen, unsolved, file=file,
