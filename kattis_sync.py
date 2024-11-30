@@ -30,8 +30,20 @@ def get_headers():
     return headers
 
 
+def get_url(url):
+    retries = 5
+    while retries >= 0:
+        try:
+            text = requests.get(url, headers=get_headers(), timeout=10).text
+            return text
+        except requests.exceptions.Timeout:
+            print("Timeout for", url)
+            retries -= 1
+    raise Exception("Failed to get url")
+
+
 def get_kattis_user_name():
-    data = requests.get("https://open.kattis.com/", headers=get_headers()).text
+    data = get_url("https://open.kattis.com/")
     soup = BeautifulSoup(data, 'html.parser')
     return soup.find('a', {'class': 'static_link'}).get('href')[7:]
 
@@ -42,7 +54,7 @@ def update_solution_cache():
     cur = con.cursor()
     url, page = "https://open.kattis.com/problems?page=", 0
     while True:
-        data = requests.get(url + str(page), headers=get_headers()).text
+        data = get_url(url + str(page))
         soup = BeautifulSoup(data, 'html.parser')
         try:
             table = soup.find_all('table', {'class': 'table2'})[1].find('tbody').find_all('tr')
@@ -75,8 +87,7 @@ def update_solution_cache():
                     difficulty_high = excluded.difficulty_high,
                     solution_status = excluded.solution_status,
                     last_seen_at = excluded.last_seen_at
-            """, (
-            problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
+            """, (problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
             found += 1
         page += 1
         if found == 0:
@@ -89,7 +100,7 @@ def update_problem_created_at():
     con = sqlite3.connect('problem_cache.db')
     for problem in util.execute_query("SELECT id FROM problem_cache WHERE created_at IS NULL"):
         print("Updating created_at for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/statistics/", headers=get_headers()).text
+        data = get_url(f"https://open.kattis.com/problems/{problem[0]}/statistics/")
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('section', {'id': 'toplist0'})
         if table is None:
@@ -113,7 +124,7 @@ def update_problem_length():
     con = sqlite3.connect('problem_cache.db')
     for problem in util.execute_query("SELECT id FROM problem_cache WHERE description_length IS NULL"):
         print("Updating description_length for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/problems/{problem[0]}/", headers=get_headers()).text
+        data = get_url(f"https://open.kattis.com/problems/{problem[0]}/")
         soup = BeautifulSoup(data, 'html.parser')
         if soup.find('div', {'class': 'problembody'}) is None:
             print("*** Problem {} has no description ***".format(problem[0]))
@@ -140,8 +151,7 @@ def update_problem_solved_at():
     for problem in util.execute_query(
             "SELECT id FROM problem_cache WHERE solved_at IS NULL AND solution_status = 'Accepted'"):
         print("Updating solved_at for problem {}".format(problem[0]))
-        data = requests.get(f"https://open.kattis.com/users/{user_name}?problem={problem[0]}&status=AC&tab=submissions",
-                            headers=get_headers()).text
+        data = get_url(f"https://open.kattis.com/users/{user_name}?problem={problem[0]}&status=AC&tab=submissions")
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'id': 'submissions'})
         if table is None:
@@ -175,8 +185,7 @@ def download_latest_solutions():
             downloaded_solutions = f.read().splitlines()
     user_name = get_kattis_user_name()
     for problem in util.execute_query("SELECT id FROM problem_cache WHERE solution_status = 'Accepted'"):
-        data = requests.get(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}",
-                            headers=get_headers()).text
+        data = get_url(f"https://open.kattis.com/users/{user_name}/submissions/{problem[0]}")
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'class': 'table-submissions'})
         if table is None:
@@ -194,11 +203,10 @@ def download_specific_solution(solution_id, downloaded_solutions):
     if solution_id in downloaded_solutions:
         print("Skipping already downloaded solution {}".format(solution_id))
         return
-    data = requests.get(f"https://open.kattis.com/submissions/{solution_id}", headers=get_headers()).text
+    data = get_url(f"https://open.kattis.com/submissions/{solution_id}")
     soup = BeautifulSoup(data, 'html.parser')
     file_name = soup.find('h3').text
-    code = requests.get(f"https://open.kattis.com/submissions/{solution_id}/source/{file_name}",
-                        headers=get_headers()).text
+    code = get_url(f"https://open.kattis.com/submissions/{solution_id}/source/{file_name}")
     first_char = file_name[0]
     if not first_char.isalpha():
         first_char = '#'
