@@ -71,6 +71,7 @@ def update_solution_cache():
             if solution_status == 'Partial' and problem_id in mark_accepted_if_partial:
                 solution_status = 'Accepted'
             shortest_solution_length = cols[3].text
+            acc = cols[5].text
             diff_text = cols[7].find('span').text
             if diff_text == '?':
                 continue
@@ -78,16 +79,18 @@ def update_solution_cache():
             difficulty_high = float(diff_text) if '-' not in diff_text else float(diff_text.split(' - ')[1])
             cur.execute("""
                 INSERT INTO problem_cache (
-                    id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, last_seen_at, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_DATE)
+                    id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, acc, last_seen_at, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_DATE)
                 ON CONFLICT(id) DO UPDATE SET
                     name = excluded.name,
                     shortest_solution_length = excluded.shortest_solution_length,
                     difficulty_low = excluded.difficulty_low,
                     difficulty_high = excluded.difficulty_high,
                     solution_status = excluded.solution_status,
+                    acc = excluded.acc,
+                    acc_delta = excluded.acc - acc + acc_delta,
                     last_seen_at = excluded.last_seen_at
-            """, (problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, date.today()))
+            """, (problem_id, name, shortest_solution_length, difficulty_low, difficulty_high, solution_status, acc, date.today()))
             found += 1
         page += 1
         if found == 0:

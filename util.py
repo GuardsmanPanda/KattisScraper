@@ -19,6 +19,8 @@ def create_solution_cache():
             solution_status TEXT,
             solved_at TEXT,
             from_contest TEXT,
+            acc INTEGER NOT NULL DEFAULT 0,
+            acc_delta INTEGER NOT NULL DEFAULT 0,
             created_at TEXT,
             last_seen_at TEXT
         )
