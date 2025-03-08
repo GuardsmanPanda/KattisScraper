@@ -10,12 +10,10 @@ compiled = set()
 def generate_data():
     """Generate test data and write it to data.txt"""
     with open('input.txt', 'w') as f:
-        n = 4
-        arr = [x for x in range(1, n + 1)]
-        shuffle(arr)
-        f.write(f'{n}\n')
-        for x in arr:
-            f.write(f'{x}\n')
+        n = 10
+        f.write(f'{n} {randint(1, 10)}\n')
+        for x in range(n):
+            f.write(f'{randint(1, 10)}\n')
 
 
 def run_result(command):
@@ -50,8 +48,8 @@ def run_cpp(name):
 def main():
     for _ in range(300):
         generate_data()
-        result_other = run_cpp('other_solution')
-        result_me = run_java('juggler')
+        result_other = run_python('other_solution')
+        result_me = run_java('sement')
         if result_me == result_other:
             print('OK')
         else:

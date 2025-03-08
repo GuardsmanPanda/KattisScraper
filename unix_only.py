@@ -43,9 +43,9 @@ repo_list = [
     Repo("BC46/kattis-solutions"),
     Repo("blubits/solutions", prefix="kattis"),
     Repo("buckeye-cn/ACM_ICPC_Materials", prefix='solutions/kattis'),
-    Repo("bmjones92/Kattis"),
     Repo("BooleanCube/cp", prefix='kattis'),
     Repo("chiralcentre/Kattis"),
+    Repo("ChoonHean/Kattis", prefix='src'),
     Repo("ChrisVilches/Algorithms", prefix="kattis"),
     Repo("coding-armadillo/kattis"),
     Repo("Cryst67/KattisSolutions"),
@@ -62,7 +62,6 @@ repo_list = [
     Repo("EoinDavey/Competitive", prefix='Kattis'),
     Repo("Eroui/Kattis"),
     Repo("f4t4nt/competitive-programming", prefix="archive/Kattis"),
-    Repo("FT-Labs/KattisProblems-Python"),
     Repo("gandhi56/Competitive-Programming", prefix='kattis'),
     Repo("gladwinyjh/Kattis"),
     Repo("gustavofadel/Exercises", prefix='Kattis'),
@@ -126,10 +125,8 @@ repo_list = [
     Repo("robertusbagaskara/kattis-solutions"),
     Repo("RussellDash332/kattis"),
     Repo("rvrheenen/OpenKattis"),
-    Repo("sai034/KattisSolutions"),
     Repo("samjwu/OpenKattis"),
     Repo("sbrommer/kattis"),
-    Repo("sergiosja/Kattis"),
     Repo("smh997/Problem-Solving", prefix='Online Judges/Kattis'),
     Repo("Superbestron/CP-Journey", prefix="CP4"),
     Repo("SurgicalSteel/Competitive-Programming", prefix='Kattis-Solutions'),
@@ -146,19 +143,7 @@ repo_list = [
     Repo("YourName0729/competitive-programming", prefix='Kattis'),
     Repo("BrandonTang89/Competitive_Programming_4_Solutions"),
     Repo("GuardsmanPanda/Kattis"),  # debug
-    # Repo("PedroContipelli/Kattis"),
-    # Repo("kantuni/Kattis"),
-    # Repo("cs-un/Kattis"),
-    # Repo("dakoval/Kattis-Solutions"),
-    # Repo("DongjiY/Kattis"),
-    # Repo("KentGrigo/Kattis"),
-    # Repo("lisansulistiani/Kattis"),
-    # Repo("KiranKaravaev/kattis"),
-    # Repo("xCiaraG/Kattis"),
-    # Repo("EhtQuyet/OpenKattis"), # clone of mpfeifer1?
-    # Repo("minidomo/Kattis"),
-    # Repo("bradendubois/competitive-programming", prefix='kattis'),
-    # Repo("shakeelsamsu/kattis"),
+    # Repo("EhtQuyet/OpenKattis"), # clone of mpfeifer1?,
 ]
 
 solution_count = defaultdict(int)
@@ -308,7 +293,7 @@ def print_repo_stats():
 
 def print_most_solved_problems():
     print("🔱 Most Solved Problems")
-    print(tabulate(map(lambda x: [*x[0]] + [x[1]], sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:30]), headers=["Problem ID", "Points", "Solved"], tablefmt='outline'))
+    print(tabulate(map(lambda x: [*x[0]] + [x[1]], sorted(solution_count.items(), key=lambda x: x[1], reverse=True)[:35]), headers=["Problem ID", "Points", "Solved"], tablefmt='outline'))
 
 
 def main():
